@@ -1,96 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Multiverse Timekeeper Design System - Futuristic Space HUD Interface */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Background & Surface Colors */
+    --background: 220 20% 8%;              /* Deep space black */
+    --background-secondary: 220 18% 12%;   /* Slightly lighter space */
+    --surface: 220 16% 15%;                /* Panel surfaces */
+    --surface-elevated: 220 14% 18%;       /* Elevated surfaces */
+    
+    /* Text Colors */
+    --foreground: 210 40% 95%;             /* Primary text - cool white */
+    --foreground-secondary: 210 20% 70%;   /* Secondary text */
+    --foreground-muted: 210 15% 50%;       /* Muted text */
+    
+    /* Neon Accent Colors - Cosmic HUD */
+    --neon-cyan: 195 100% 60%;             /* Electric cyan */
+    --neon-blue: 215 90% 55%;              /* Deep space blue */
+    --neon-purple: 270 80% 65%;            /* Cosmic purple */
+    --neon-pink: 320 85% 70%;              /* Cosmic magenta */
+    --neon-gold: 45 95% 60%;               /* Warning/special gold */
+    
+    /* System Colors */
+    --card: 220 16% 15%;                   /* Panel background */
+    --card-foreground: 210 40% 95%;        /* Panel text */
+    --popover: 220 14% 18%;                /* Popup background */
+    --popover-foreground: 210 40% 95%;     /* Popup text */
+    
+    /* Primary - Neon Cyan Theme */
+    --primary: 195 100% 60%;               /* Electric cyan */
+    --primary-foreground: 220 20% 8%;      /* Dark text on cyan */
+    
+    /* Secondary - Space Surface */
+    --secondary: 220 16% 15%;              /* Panel surface */
+    --secondary-foreground: 210 20% 70%;   /* Secondary text */
+    
+    /* Muted Elements */
+    --muted: 220 14% 18%;                  /* Subtle backgrounds */
+    --muted-foreground: 210 15% 50%;       /* Muted text */
+    
+    /* Accent - Purple Cosmic */
+    --accent: 270 80% 65%;                 /* Cosmic purple */
+    --accent-foreground: 220 20% 8%;       /* Dark text on purple */
+    
+    /* Destructive - Warning Red */
+    --destructive: 0 75% 55%;              /* Alert red */
+    --destructive-foreground: 210 40% 95%; /* Light text on red */
+    
+    /* Borders and Inputs */
+    --border: 220 20% 25%;                 /* Subtle borders */
+    --input: 220 16% 15%;                  /* Input backgrounds */
+    --ring: 195 100% 60%;                  /* Focus rings - cyan */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.8rem;                     /* Slightly rounded for sci-fi feel */
+    
+    /* Cosmic Gradients */
+    --gradient-cosmic: linear-gradient(135deg, hsl(var(--neon-cyan)) 0%, hsl(var(--neon-purple)) 50%, hsl(var(--neon-pink)) 100%);
+    --gradient-space: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background-secondary)) 100%);
+    --gradient-neon: linear-gradient(90deg, hsl(var(--neon-cyan) / 0.3) 0%, hsl(var(--neon-purple) / 0.3) 100%);
+    --gradient-surface: linear-gradient(135deg, hsl(var(--surface)) 0%, hsl(var(--surface-elevated)) 100%);
+    
+    /* Glow Effects */
+    --glow-cyan: 0 0 20px hsl(var(--neon-cyan) / 0.5), 0 0 40px hsl(var(--neon-cyan) / 0.3), 0 0 60px hsl(var(--neon-cyan) / 0.1);
+    --glow-purple: 0 0 20px hsl(var(--neon-purple) / 0.5), 0 0 40px hsl(var(--neon-purple) / 0.3);
+    --glow-gold: 0 0 20px hsl(var(--neon-gold) / 0.6), 0 0 40px hsl(var(--neon-gold) / 0.4);
+    
+    /* Animations */
+    --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animation-glow: glow 2s ease-in-out infinite alternate;
+    --animation-float: float 3s ease-in-out infinite;
   }
 }
 
@@ -100,6 +83,102 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-['Inter'] selection:bg-primary/20;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  /* HUD Panel Base */
+  .hud-panel {
+    @apply bg-card/50 backdrop-blur-md border border-primary/30 rounded-lg;
+    background: linear-gradient(135deg, hsl(var(--surface) / 0.8) 0%, hsl(var(--surface-elevated) / 0.9) 100%);
+    box-shadow: 0 8px 32px hsl(var(--background) / 0.3), inset 0 1px 0 hsl(var(--primary) / 0.2);
+  }
+  
+  /* Neon Text Effect */
+  .neon-text {
+    @apply text-primary;
+    text-shadow: var(--glow-cyan);
+    animation: var(--animation-glow);
+  }
+  
+  /* Cosmic Border Animation */
+  .cosmic-border {
+    position: relative;
+    @apply border border-primary/30;
+  }
+  
+  .cosmic-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: var(--gradient-cosmic);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.3;
+    animation: var(--animation-pulse);
+  }
+  
+  /* Floating Animation */
+  .float-animation {
+    animation: var(--animation-float);
+  }
+  
+  /* Time Display Styling */
+  .time-display {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    @apply text-4xl md:text-6xl tracking-wider;
+    text-shadow: var(--glow-cyan);
+  }
+  
+  /* Mars Time Styling */
+  .mars-time {
+    @apply text-destructive;
+    text-shadow: var(--glow-gold);
+  }
+  
+  /* Wormhole Effect */
+  .wormhole-bg {
+    background: radial-gradient(circle at center, hsl(var(--neon-purple) / 0.3) 0%, hsl(var(--background)) 70%);
+    animation: var(--animation-pulse);
+  }
+}
+
+@layer utilities {
+  /* Custom Keyframes */
+  @keyframes glow {
+    from { text-shadow: var(--glow-cyan); }
+    to { text-shadow: var(--glow-cyan), var(--glow-purple); }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes pulse-cosmic {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+  
+  /* Utility Classes */
+  .bg-cosmic-gradient { background: var(--gradient-cosmic); }
+  .bg-space-gradient { background: var(--gradient-space); }
+  .bg-neon-gradient { background: var(--gradient-neon); }
+  .bg-surface-gradient { background: var(--gradient-surface); }
+  
+  .text-neon-cyan { @apply text-[hsl(var(--neon-cyan))]; }
+  .text-neon-purple { @apply text-[hsl(var(--neon-purple))]; }
+  .text-neon-gold { @apply text-[hsl(var(--neon-gold))]; }
+  .text-neon-pink { @apply text-[hsl(var(--neon-pink))]; }
 }
