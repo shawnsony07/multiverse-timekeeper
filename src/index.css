@@ -8,67 +8,66 @@
 
 @layer base {
   :root {
-    /* Core Background & Surface Colors */
-    --background: 220 20% 8%;              /* Deep space black */
-    --background-secondary: 220 18% 12%;   /* Slightly lighter space */
-    --surface: 220 16% 15%;                /* Panel surfaces */
-    --surface-elevated: 220 14% 18%;       /* Elevated surfaces */
+    /* Retro Orange/Amber Background Colors */
+    --background: 35 85% 45%;              /* Retro orange background */
+    --background-secondary: 30 80% 40%;    /* Darker orange variant */
+    --surface: 220 15% 15%;                /* Dark panel surfaces */
+    --surface-elevated: 220 10% 18%;       /* Elevated dark surfaces */
     
     /* Text Colors */
-    --foreground: 210 40% 95%;             /* Primary text - cool white */
-    --foreground-secondary: 210 20% 70%;   /* Secondary text */
-    --foreground-muted: 210 15% 50%;       /* Muted text */
+    --foreground: 35 15% 90%;              /* Light cream text */
+    --foreground-secondary: 35 25% 75%;    /* Secondary cream text */
+    --foreground-muted: 35 20% 60%;        /* Muted text */
     
-    /* Neon Accent Colors - Cosmic HUD */
-    --neon-cyan: 195 100% 60%;             /* Electric cyan */
-    --neon-blue: 215 90% 55%;              /* Deep space blue */
-    --neon-purple: 270 80% 65%;            /* Cosmic purple */
-    --neon-pink: 320 85% 70%;              /* Cosmic magenta */
-    --neon-gold: 45 95% 60%;               /* Warning/special gold */
+    /* Retro Accent Colors */
+    --retro-orange: 20 95% 55%;            /* Bold orange/red */
+    --retro-amber: 35 90% 65%;             /* Warm amber */
+    --retro-gold: 45 95% 60%;              /* Golden yellow */
+    --retro-cyan: 195 100% 60%;            /* Accent cyan for wormhole */
+    --retro-dark: 220 25% 8%;              /* Very dark for panels */
     
     /* System Colors */
-    --card: 220 16% 15%;                   /* Panel background */
-    --card-foreground: 210 40% 95%;        /* Panel text */
-    --popover: 220 14% 18%;                /* Popup background */
-    --popover-foreground: 210 40% 95%;     /* Popup text */
+    --card: 220 25% 8%;                    /* Dark panel background */
+    --card-foreground: 35 15% 90%;         /* Light text on dark */
+    --popover: 220 20% 12%;                /* Popup background */
+    --popover-foreground: 35 15% 90%;      /* Popup text */
     
-    /* Primary - Neon Cyan Theme */
-    --primary: 195 100% 60%;               /* Electric cyan */
-    --primary-foreground: 220 20% 8%;      /* Dark text on cyan */
+    /* Primary - Orange Theme */
+    --primary: 20 95% 55%;                 /* Bold orange */
+    --primary-foreground: 35 15% 90%;      /* Light text on orange */
     
-    /* Secondary - Space Surface */
-    --secondary: 220 16% 15%;              /* Panel surface */
-    --secondary-foreground: 210 20% 70%;   /* Secondary text */
+    /* Secondary - Dark Surface */
+    --secondary: 220 25% 8%;               /* Dark panel */
+    --secondary-foreground: 35 25% 75%;    /* Light text */
     
     /* Muted Elements */
-    --muted: 220 14% 18%;                  /* Subtle backgrounds */
-    --muted-foreground: 210 15% 50%;       /* Muted text */
+    --muted: 220 20% 12%;                  /* Subtle dark backgrounds */
+    --muted-foreground: 35 20% 60%;        /* Muted text */
     
-    /* Accent - Purple Cosmic */
-    --accent: 270 80% 65%;                 /* Cosmic purple */
-    --accent-foreground: 220 20% 8%;       /* Dark text on purple */
+    /* Accent - Amber */
+    --accent: 35 90% 65%;                  /* Warm amber */
+    --accent-foreground: 220 25% 8%;       /* Dark text on amber */
     
     /* Destructive - Warning Red */
     --destructive: 0 75% 55%;              /* Alert red */
-    --destructive-foreground: 210 40% 95%; /* Light text on red */
+    --destructive-foreground: 35 15% 90%;  /* Light text on red */
     
     /* Borders and Inputs */
-    --border: 220 20% 25%;                 /* Subtle borders */
-    --input: 220 16% 15%;                  /* Input backgrounds */
-    --ring: 195 100% 60%;                  /* Focus rings - cyan */
+    --border: 20 95% 55%;                  /* Orange borders */
+    --input: 220 25% 8%;                   /* Dark input backgrounds */
+    --ring: 20 95% 55%;                    /* Orange focus rings */
 
-    --radius: 0.8rem;                     /* Slightly rounded for sci-fi feel */
+    --radius: 0.5rem;                      /* Retro rounded corners */
     
-    /* Cosmic Gradients */
-    --gradient-cosmic: linear-gradient(135deg, hsl(var(--neon-cyan)) 0%, hsl(var(--neon-purple)) 50%, hsl(var(--neon-pink)) 100%);
-    --gradient-space: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background-secondary)) 100%);
-    --gradient-neon: linear-gradient(90deg, hsl(var(--neon-cyan) / 0.3) 0%, hsl(var(--neon-purple) / 0.3) 100%);
-    --gradient-surface: linear-gradient(135deg, hsl(var(--surface)) 0%, hsl(var(--surface-elevated)) 100%);
+    /* Retro Gradients */
+    --gradient-retro: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background-secondary)) 100%);
+    --gradient-panel: linear-gradient(135deg, hsl(var(--surface)) 0%, hsl(var(--surface-elevated)) 100%);
+    --gradient-orange: linear-gradient(90deg, hsl(var(--retro-orange)) 0%, hsl(var(--retro-amber)) 100%);
     
     /* Glow Effects */
-    --glow-cyan: 0 0 20px hsl(var(--neon-cyan) / 0.5), 0 0 40px hsl(var(--neon-cyan) / 0.3), 0 0 60px hsl(var(--neon-cyan) / 0.1);
-    --glow-purple: 0 0 20px hsl(var(--neon-purple) / 0.5), 0 0 40px hsl(var(--neon-purple) / 0.3);
-    --glow-gold: 0 0 20px hsl(var(--neon-gold) / 0.6), 0 0 40px hsl(var(--neon-gold) / 0.4);
+    --glow-orange: 0 0 15px hsl(var(--retro-orange) / 0.6), 0 0 30px hsl(var(--retro-orange) / 0.4);
+    --glow-amber: 0 0 15px hsl(var(--retro-amber) / 0.6), 0 0 30px hsl(var(--retro-amber) / 0.4);
+    --glow-cyan: 0 0 15px hsl(var(--retro-cyan) / 0.6), 0 0 30px hsl(var(--retro-cyan) / 0.4);
     
     /* Animations */
     --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -94,63 +93,56 @@
 }
 
 @layer components {
-  /* HUD Panel Base */
-  .hud-panel {
-    @apply bg-card/50 backdrop-blur-md border border-primary/30 rounded-lg;
-    background: linear-gradient(135deg, hsl(var(--surface) / 0.8) 0%, hsl(var(--surface-elevated) / 0.9) 100%);
-    box-shadow: 0 8px 32px hsl(var(--background) / 0.3), inset 0 1px 0 hsl(var(--primary) / 0.2);
+  /* Retro Panel Base */
+  .retro-panel {
+    @apply border-4 rounded-lg;
+    background: hsl(var(--surface));
+    border-color: hsl(var(--border));
+    box-shadow: inset 0 0 0 2px hsl(var(--border) / 0.3);
   }
   
-  /* Neon Text Effect */
-  .neon-text {
-    @apply text-primary;
-    text-shadow: var(--glow-cyan);
-    animation: var(--animation-glow);
+  /* Retro Card Panels */
+  .retro-card {
+    @apply border-2 rounded-lg p-6 h-48;
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+    box-shadow: inset 0 0 0 1px hsl(var(--border) / 0.5);
   }
   
-  /* Cosmic Border Animation */
-  .cosmic-border {
-    position: relative;
-    @apply border border-primary/30;
-  }
-  
-  .cosmic-border::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: var(--gradient-cosmic);
-    border-radius: inherit;
-    z-index: -1;
-    opacity: 0.3;
-    animation: var(--animation-pulse);
-  }
-  
-  /* Floating Animation */
-  .float-animation {
-    animation: var(--animation-float);
+  /* Retro Title Effect */
+  .retro-title {
+    @apply text-[hsl(var(--retro-orange))];
+    text-shadow: 
+      -2px -2px 0 hsl(var(--retro-dark)),
+      2px -2px 0 hsl(var(--retro-dark)),
+      -2px 2px 0 hsl(var(--retro-dark)),
+      2px 2px 0 hsl(var(--retro-dark)),
+      0 0 10px hsl(var(--retro-orange) / 0.5);
   }
   
   /* Time Display Styling */
   .time-display {
     font-family: 'Orbitron', monospace;
     font-weight: 900;
-    @apply text-4xl md:text-6xl tracking-wider;
-    text-shadow: var(--glow-cyan);
+    @apply text-4xl tracking-wider text-[hsl(var(--retro-orange))];
+    text-shadow: var(--glow-orange);
   }
   
   /* Mars Time Styling */
   .mars-time {
-    @apply text-destructive;
-    text-shadow: var(--glow-gold);
+    @apply text-[hsl(var(--retro-orange))];
+    text-shadow: var(--glow-orange);
   }
   
-  /* Wormhole Effect */
+  /* Wormhole Effect - Cyan for contrast */
   .wormhole-bg {
-    background: radial-gradient(circle at center, hsl(var(--neon-purple) / 0.3) 0%, hsl(var(--background)) 70%);
-    animation: var(--animation-pulse);
+    background: radial-gradient(circle at center, hsl(var(--retro-cyan) / 0.2) 0%, hsl(var(--card)) 70%);
+  }
+  
+  /* Wormhole Time - Cyan styling */
+  .wormhole-time {
+    @apply text-[hsl(var(--retro-cyan))];
+    text-shadow: var(--glow-cyan);
   }
 }
 
@@ -172,13 +164,12 @@
   }
   
   /* Utility Classes */
-  .bg-cosmic-gradient { background: var(--gradient-cosmic); }
-  .bg-space-gradient { background: var(--gradient-space); }
-  .bg-neon-gradient { background: var(--gradient-neon); }
-  .bg-surface-gradient { background: var(--gradient-surface); }
+  .bg-retro-gradient { background: var(--gradient-retro); }
+  .bg-panel-gradient { background: var(--gradient-panel); }
+  .bg-orange-gradient { background: var(--gradient-orange); }
   
-  .text-neon-cyan { @apply text-[hsl(var(--neon-cyan))]; }
-  .text-neon-purple { @apply text-[hsl(var(--neon-purple))]; }
-  .text-neon-gold { @apply text-[hsl(var(--neon-gold))]; }
-  .text-neon-pink { @apply text-[hsl(var(--neon-pink))]; }
+  .text-retro-orange { @apply text-[hsl(var(--retro-orange))]; }
+  .text-retro-amber { @apply text-[hsl(var(--retro-amber))]; }
+  .text-retro-gold { @apply text-[hsl(var(--retro-gold))]; }
+  .text-retro-cyan { @apply text-[hsl(var(--retro-cyan))]; }
 }
