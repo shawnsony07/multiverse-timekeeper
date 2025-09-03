@@ -1,1 +1,10 @@
 project_id = "zjozesrdjwoeiyidbzop"
+
+[functions.sync-events]
+verify_jwt = false
+
+[functions.get-events]
+verify_jwt = false
+
+[functions.planetary-time]
+verify_jwt = false
