@@ -14,7 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          created_at: string | null
+          date: string | null
+          description: string | null
+          event_type: string | null
+          external_id: string | null
+          id: string
+          name: string
+          source: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          event_type?: string | null
+          external_id?: string | null
+          id?: string
+          name: string
+          source?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string | null
+          description?: string | null
+          event_type?: string | null
+          external_id?: string | null
+          id?: string
+          name?: string
+          source?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      saved_clocks: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string | null
+          planet: string
+          time_format: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          planet: string
+          time_format?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          planet?: string
+          time_format?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_clocks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          id: string
+          preferences: Json | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          preferences?: Json | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          preferences?: Json | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
