@@ -181,4 +181,48 @@
   .text-neon-purple { @apply text-[hsl(var(--neon-purple))]; }
   .text-neon-gold { @apply text-[hsl(var(--neon-gold))]; }
   .text-neon-pink { @apply text-[hsl(var(--neon-pink))]; }
+  
+  /* Circular Time Display Effects */
+  .time-circle {
+    position: relative;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    box-shadow: 
+      0 0 30px rgba(0, 255, 255, 0.3),
+      inset 0 0 30px rgba(0, 255, 255, 0.1);
+  }
+  
+  .mars-circle {
+    box-shadow: 
+      0 0 30px rgba(255, 69, 0, 0.4),
+      inset 0 0 30px rgba(255, 69, 0, 0.1);
+  }
+  
+  .asgard-circle {
+    box-shadow: 
+      0 0 30px rgba(255, 215, 0, 0.4),
+      inset 0 0 30px rgba(255, 215, 0, 0.1);
+  }
+  
+  /* Enhanced Glow Effects */
+  .enhanced-glow-cyan {
+    text-shadow: 
+      0 0 10px rgba(0, 255, 255, 0.8),
+      0 0 20px rgba(0, 255, 255, 0.6),
+      0 0 30px rgba(0, 255, 255, 0.4);
+  }
+  
+  .enhanced-glow-red {
+    text-shadow: 
+      0 0 10px rgba(255, 69, 0, 0.8),
+      0 0 20px rgba(255, 69, 0, 0.6),
+      0 0 30px rgba(255, 69, 0, 0.4);
+  }
+  
+  .enhanced-glow-gold {
+    text-shadow: 
+      0 0 10px rgba(255, 215, 0, 0.8),
+      0 0 20px rgba(255, 215, 0, 0.6),
+      0 0 30px rgba(255, 215, 0, 0.4);
+  }
 }
