@@ -99,11 +99,11 @@ export function CosmicEvents() {
                         {launch.name}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {launch.rocket?.configuration?.manufacturer?.name || 'Unknown'} • {launch.rocket?.configuration?.name || 'Unknown Rocket'}
+                        {launch.rocket.configuration.manufacturer.name} • {launch.rocket.configuration.name}
                       </p>
                     </div>
-                    <Badge className={`ml-2 ${getStatusColor(launch.status?.name || 'Unknown')} bg-transparent border-current`}>
-                      {launch.status?.name || 'TBD'}
+                    <Badge className={`ml-2 ${getStatusColor(launch.status.name)} bg-transparent border-current`}>
+                      {launch.status.name}
                     </Badge>
                   </div>
                   
@@ -123,7 +123,7 @@ export function CosmicEvents() {
                   </div>
                   
                   <p className="text-xs text-foreground-secondary line-clamp-2">
-                    {launch.mission?.description || `Launch from ${launch.pad?.location?.name || 'Unknown Location'}`}
+                    {launch.mission?.description || `Launch from ${launch.pad.location.name}`}
                   </p>
                 </div>
               </Card>
@@ -200,7 +200,7 @@ export function CosmicEvents() {
               {getTimeUntilLaunch(launches[0].net)}
             </div>
             <p className="text-foreground-secondary">
-              {launches[0]?.rocket?.configuration?.manufacturer?.name || 'Unknown'} • {new Date(launches[0].net).toLocaleString()}
+              {launches[0].rocket.configuration.manufacturer.name} • {new Date(launches[0].net).toLocaleString()}
             </p>
           </div>
         )}

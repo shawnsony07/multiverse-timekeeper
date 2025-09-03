@@ -21,7 +21,6 @@
     
     /* Neon Accent Colors - Cosmic HUD */
     --neon-cyan: 195 100% 60%;             /* Electric cyan */
-    --neon-orange: 20 100% 60%;            /* Cosmic orange */
     --neon-blue: 215 90% 55%;              /* Deep space blue */
     --neon-purple: 270 80% 65%;            /* Cosmic purple */
     --neon-pink: 320 85% 70%;              /* Cosmic magenta */
@@ -95,13 +94,6 @@
 }
 
 @layer components {
-  /* Cosmic Panel */
-  .cosmic-panel {
-    @apply bg-black/80 backdrop-blur-sm border-2 border-neon-cyan rounded-lg;
-    background: rgba(0, 0, 0, 0.9);
-    box-shadow: 0 0 20px hsl(var(--neon-cyan) / 0.3), inset 0 0 20px hsl(var(--neon-cyan) / 0.1);
-  }
-  
   /* HUD Panel Base */
   .hud-panel {
     @apply bg-card/50 backdrop-blur-md border border-primary/30 rounded-lg;
@@ -186,7 +178,6 @@
   .bg-surface-gradient { background: var(--gradient-surface); }
   
   .text-neon-cyan { @apply text-[hsl(var(--neon-cyan))]; }
-  .text-neon-orange { @apply text-[hsl(var(--neon-orange))]; }
   .text-neon-purple { @apply text-[hsl(var(--neon-purple))]; }
   .text-neon-gold { @apply text-[hsl(var(--neon-gold))]; }
   .text-neon-pink { @apply text-[hsl(var(--neon-pink))]; }
