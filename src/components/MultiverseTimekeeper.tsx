@@ -147,24 +147,31 @@ export function MultiverseTimekeeper() {
         </footer>
       </div>
 
-      {/* Cape Status Bar */}
-      <div 
-        className={`cape-runner ${isScrolling ? 'running' : 'idle'}`}
-        style={{ 
-          transform: `translateX(${Math.min(scrollY * 0.5, typeof window !== 'undefined' ? window.innerWidth - 200 : 800)}px)`,
-          transition: 'transform 0.1s ease-out'
-        }}
-      >
-        <img 
-          src="/cape.svg" 
-          alt="Flowing Cape" 
-          className="w-48 h-24 object-contain filter drop-shadow-lg"
-          style={{
-            transform: `scaleX(${scrollDirection === 'down' ? -1 : 1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 3, 10) : -Math.min(scrollVelocity * 3, 10)}deg)`,
-            transition: 'transform 0.2s ease-out',
-            filter: `drop-shadow(${isScrolling ? '4px 8px 16px rgba(220, 20, 60, 0.6)' : '2px 4px 8px rgba(220, 20, 60, 0.3)'})`
+      {/* Bottom Status Bar with Sliding Cape */}
+      <div className="fixed bottom-0 left-0 right-0 h-1 bg-transparent z-50">
+        {/* White line */}
+        <div className="absolute top-1/2 left-0 right-0 h-px bg-white/80"></div>
+        
+        {/* Sliding Cape */}
+        <div 
+          className="absolute top-1/2 -translate-y-1/2"
+          style={{ 
+            transform: `translateX(${(scrollY * 0.3) % (typeof window !== 'undefined' ? window.innerWidth + 100 : 1000) - 50}px)`,
+            transition: 'none'
           }}
-        />
+        >
+          <img 
+            src="/lovable-uploads/3542d489-a1a0-4487-af09-b2d45fe061f7.png" 
+            alt="Flowing Cape" 
+            className="w-16 h-8 object-contain animate-pulse"
+            style={{
+              transform: `scaleX(${scrollDirection === 'down' ? 1 : -1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 2, 5) : -Math.min(scrollVelocity * 2, 5)}deg)`,
+              transition: 'transform 0.3s ease-out',
+              filter: `drop-shadow(0 2px 8px rgba(220, 38, 127, ${isScrolling ? '0.8' : '0.4'})) brightness(${isScrolling ? '1.2' : '1'})`,
+              animation: 'pulse 2s ease-in-out infinite, floating 3s ease-in-out infinite'
+            }}
+          />
+        </div>
       </div>
     </div>
   );

@@ -185,62 +185,13 @@
   .text-neon-red { @apply text-[hsl(var(--neon-red))]; }
   .text-neon-green { @apply text-[hsl(var(--neon-green))]; }
   
-  /* Cape Running Animation */
-  .cape-runner {
-    position: fixed;
-    bottom: 20px;
-    left: 0;
-    z-index: 1000;
-    transition: transform 0.1s ease-out;
-  }
-  
-  .cape-runner.running {
-    animation: cape-flow 1.2s ease-in-out infinite;
-  }
-  
-  .cape-runner.idle {
-    animation: cape-sway 4s ease-in-out infinite;
-  }
-  
-  @keyframes cape-flow {
+  /* Sliding Cape Animation */
+  @keyframes floating {
     0%, 100% { 
-      transform: translateY(0px) rotate(0deg) scale(1); 
-      filter: drop-shadow(2px 4px 8px rgba(220, 20, 60, 0.4));
-    }
-    20% { 
-      transform: translateY(-3px) rotate(2deg) scale(1.02); 
-      filter: drop-shadow(6px 8px 16px rgba(220, 20, 60, 0.6));
-    }
-    40% { 
-      transform: translateY(-1px) rotate(-1deg) scale(0.98); 
-      filter: drop-shadow(4px 6px 12px rgba(220, 20, 60, 0.5));
-    }
-    60% { 
-      transform: translateY(-2px) rotate(1deg) scale(1.01); 
-      filter: drop-shadow(5px 7px 14px rgba(220, 20, 60, 0.55));
-    }
-    80% { 
-      transform: translateY(-1px) rotate(-0.5deg) scale(0.99); 
-      filter: drop-shadow(3px 5px 10px rgba(220, 20, 60, 0.45));
-    }
-  }
-  
-  @keyframes cape-sway {
-    0%, 100% { 
-      transform: translateY(0px) rotate(0deg) scale(1); 
-      filter: drop-shadow(2px 4px 8px rgba(220, 20, 60, 0.2));
-    }
-    25% { 
-      transform: translateY(-1px) rotate(0.8deg) scale(1.01); 
-      filter: drop-shadow(3px 5px 10px rgba(220, 20, 60, 0.3));
+      transform: translateY(-2px) scale(1); 
     }
     50% { 
-      transform: translateY(-0.5px) rotate(-0.5deg) scale(0.99); 
-      filter: drop-shadow(2px 4px 8px rgba(220, 20, 60, 0.25));
-    }
-    75% { 
-      transform: translateY(-1.5px) rotate(0.3deg) scale(1.005); 
-      filter: drop-shadow(3px 5px 10px rgba(220, 20, 60, 0.28));
+      transform: translateY(-6px) scale(1.05); 
     }
   }
   
