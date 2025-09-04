@@ -156,18 +156,19 @@ export function MultiverseTimekeeper() {
         <div 
           className="absolute top-1/2 -translate-y-1/2"
           style={{ 
-            transform: `translateX(${((scrollY * 0.5) % (typeof window !== 'undefined' ? window.innerWidth + 200 : 1200)) - 100}px)`,
+            transform: `translateX(${Math.min(scrollY * 0.3, typeof window !== 'undefined' ? window.innerWidth - 80 : 1200)}px)`,
             transition: 'none'
           }}
         >
-          <div 
-            className="w-20 h-12 bg-gradient-to-b from-red-600 via-red-700 to-red-800 rounded-b-full shadow-lg"
+          <img 
+            src="/lovable-uploads/3542d489-a1a0-4487-af09-b2d45fe061f7.png" 
+            alt="Flowing Cape" 
+            className="w-20 h-12 object-contain"
             style={{
               transform: `scaleX(${scrollDirection === 'down' ? 1 : -1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 2, 8) : -Math.min(scrollVelocity * 2, 8)}deg)`,
               transition: 'transform 0.3s ease-out',
               filter: `drop-shadow(0 2px 12px rgba(220, 38, 127, ${isScrolling ? '0.9' : '0.5'})) brightness(${isScrolling ? '1.3' : '1'})`,
-              animation: 'floating 3s ease-in-out infinite',
-              clipPath: 'polygon(20% 0%, 80% 0%, 95% 30%, 90% 60%, 85% 80%, 70% 95%, 30% 95%, 15% 80%, 10% 60%, 5% 30%)'
+              animation: 'floating 3s ease-in-out infinite'
             }}
           />
         </div>
