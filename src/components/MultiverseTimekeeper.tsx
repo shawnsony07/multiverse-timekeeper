@@ -56,18 +56,25 @@ export function MultiverseTimekeeper() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Cosmic Background Effects */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Cosmic Background */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-pulse"
+        style={{
+          backgroundImage: "url('/lovable-uploads/39c9e878-3cf2-4ba3-85b9-521e304dea25.png')",
+          animation: 'cosmic-pulse 8s ease-in-out infinite'
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20"></div>
+      </div>
+      {/* Additional Cosmic Effects */}
       <div className="absolute inset-0">
         {/* Stars */}
         <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
         <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-yellow-400 rounded-full animate-pulse"></div>
         <div className="absolute bottom-1/4 left-1/2 w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
         <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-red-400 rounded-full animate-pulse"></div>
-        
-        {/* Nebula effects */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-cyan-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8">
@@ -158,13 +165,13 @@ export function MultiverseTimekeeper() {
           }}
         >
           <img 
-            src="/lovable-uploads/e9a3dd20-f657-481c-9496-0073edebb11a.png" 
+            src="/lovable-uploads/94242e31-6ecc-4921-b879-54311700febf.png" 
             alt="Flowing Cape" 
-            className="w-24 h-16 object-contain"
+            className="w-32 h-24 object-contain"
             style={{
               transform: `scaleX(${scrollDirection === 'down' ? 1 : -1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 2, 8) : -Math.min(scrollVelocity * 2, 8)}deg)`,
               transition: 'transform 0.3s ease-out',
-              filter: `drop-shadow(0 2px 12px rgba(220, 38, 127, ${isScrolling ? '0.9' : '0.5'})) brightness(${isScrolling ? '1.3' : '1'})`,
+              filter: `drop-shadow(0 4px 16px rgba(220, 38, 127, ${isScrolling ? '0.9' : '0.5'})) brightness(${isScrolling ? '1.3' : '1'})`,
               animation: 'floating 3s ease-in-out infinite'
             }}
           />
