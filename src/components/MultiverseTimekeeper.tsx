@@ -148,22 +148,19 @@ export function MultiverseTimekeeper() {
       </div>
 
       {/* Bottom Status Bar with Sliding Cape */}
-      <div className="fixed bottom-0 left-0 right-0 h-16 bg-transparent z-50 pointer-events-none">
-        {/* White line */}
-        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/90 shadow-sm"></div>
-        
+      <div className="fixed bottom-0 left-0 right-0 h-16 bg-transparent z-50 pointer-events-none">        
         {/* Sliding Cape */}
         <div 
           className="absolute top-1/2 -translate-y-1/2"
           style={{ 
-            transform: `translateX(${Math.min(scrollY * 0.3, typeof window !== 'undefined' ? window.innerWidth - 80 : 1200)}px)`,
+            transform: `translateX(${Math.min(scrollY * 1.5, typeof window !== 'undefined' ? window.innerWidth - 100 : 1200)}px)`,
             transition: 'none'
           }}
         >
           <img 
-            src="/lovable-uploads/3542d489-a1a0-4487-af09-b2d45fe061f7.png" 
+            src="/lovable-uploads/e9a3dd20-f657-481c-9496-0073edebb11a.png" 
             alt="Flowing Cape" 
-            className="w-20 h-12 object-contain"
+            className="w-24 h-16 object-contain"
             style={{
               transform: `scaleX(${scrollDirection === 'down' ? 1 : -1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 2, 8) : -Math.min(scrollVelocity * 2, 8)}deg)`,
               transition: 'transform 0.3s ease-out',
