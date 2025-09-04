@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, Rocket, Zap, Globe } from 'lucide-react';
 import { EarthTime } from '@/components/time/EarthTime';
@@ -12,6 +12,26 @@ export function MultiverseTimekeeper() {
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
   const [scrollVelocity, setScrollVelocity] = useState(0);
+  const [maxScroll, setMaxScroll] = useState(1);
+  const [viewportWidth, setViewportWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+  const CAPE_WIDTH_PX = 192; // aligns with w-48 (12rem * 16)
+
+  // Choose background per tab (NOW & EVENTS share same)
+  const backgroundUrl = useMemo(() => {
+    if (activeTab === 'now') {
+      return "/lovable-uploads/india1.gif";
+    }
+    if (activeTab === 'galactic') {
+      return "/lovable-uploads/galatic.gif"; // file provided by user
+    }
+    if (activeTab === 'wormhole') {
+      return "/lovable-uploads/wormhole.gif";
+    }
+    // events (default)
+    return "/lovable-uploads/infinity.gif";
+  }, [activeTab]);
 
   useEffect(() => {
     let scrollTimeout: NodeJS.Timeout;
@@ -48,9 +68,31 @@ export function MultiverseTimekeeper() {
       }, 150);
     };
     
+    const recalc = () => {
+      const doc = document.documentElement;
+      const body = document.body;
+      const scrollHeight = Math.max(
+        body.scrollHeight,
+        doc.scrollHeight,
+        body.offsetHeight,
+        doc.offsetHeight,
+        body.clientHeight,
+        doc.clientHeight
+      );
+      const max = Math.max(1, scrollHeight - window.innerHeight);
+      setMaxScroll(max);
+      setViewportWidth(window.innerWidth);
+    };
+    
+    recalc();
+    
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', recalc);
+    window.addEventListener('load', recalc);
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', recalc);
+      window.removeEventListener('load', recalc);
       clearTimeout(scrollTimeout);
     };
   }, []);
@@ -59,17 +101,19 @@ export function MultiverseTimekeeper() {
     <div className="min-h-screen relative overflow-hidden">
       {/* Cosmic Background */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-pulse"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
         style={{
-          backgroundImage: "url('/lovable-uploads/39c9e878-3cf2-4ba3-85b9-521e304dea25.png')",
-          animation: 'cosmic-pulse 8s ease-in-out infinite'
+          backgroundImage: `url(${backgroundUrl}?v=1), url('/lovable-uploads/39c9e878-3cf2-4ba3-85b9-521e304dea25.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
         }}
       >
         {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/30"></div>
       </div>
       {/* Additional Cosmic Effects */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-10 pointer-events-none">
         {/* Stars */}
         <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-cyan-400 rounded-full animate-pulse"></div>
         <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-yellow-400 rounded-full animate-pulse"></div>
@@ -77,7 +121,7 @@ export function MultiverseTimekeeper() {
         <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-red-400 rounded-full animate-pulse"></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      <div className="relative z-20 container mx-auto px-4 py-8">
         {/* Cosmic Header */}
         <header className="text-center mb-12">
           <h1 className="text-6xl md:text-8xl font-orbitron font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
@@ -160,14 +204,23 @@ export function MultiverseTimekeeper() {
         <div 
           className="absolute bottom-6 left-0"
           style={{ 
-            transform: `translateX(${Math.min(scrollY * 3.5, typeof window !== 'undefined' ? window.innerWidth - 50 : 1200)}px)`,
-            transition: 'none'
+            transform: `translateX(${(() => {
+              // Make cape traverse full viewport width in ~3 viewport-height scrolls
+              //const threeScreens = Math.max(1, window.innerHeight * 3);
+              const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
+              const easedProgress = progress * progress * (3 - 2 * progress);
+              const safetyMargin = 12; // avoid clipping on the far right
+              const travel = Math.max(0, viewportWidth - CAPE_WIDTH_PX - safetyMargin);
+              return easedProgress * travel;
+            })()}px)`,
+            transition: 'none',
+            willChange: 'transform'
           }}
         >
           <img 
             src="/lovable-uploads/94242e31-6ecc-4921-b879-54311700febf.png" 
             alt="Flowing Cape" 
-            className="w-32 h-24 object-contain"
+            className="w-48 h-36 object-contain"
             style={{
               transform: `scaleX(${scrollDirection === 'down' ? 1 : -1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 2, 8) : -Math.min(scrollVelocity * 2, 8)}deg)`,
               transition: 'transform 0.3s ease-out',
