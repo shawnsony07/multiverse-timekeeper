@@ -148,27 +148,26 @@ export function MultiverseTimekeeper() {
       </div>
 
       {/* Bottom Status Bar with Sliding Cape */}
-      <div className="fixed bottom-0 left-0 right-0 h-1 bg-transparent z-50">
+      <div className="fixed bottom-0 left-0 right-0 h-16 bg-transparent z-50 pointer-events-none">
         {/* White line */}
-        <div className="absolute top-1/2 left-0 right-0 h-px bg-white/80"></div>
+        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/90 shadow-sm"></div>
         
         {/* Sliding Cape */}
         <div 
           className="absolute top-1/2 -translate-y-1/2"
           style={{ 
-            transform: `translateX(${(scrollY * 0.3) % (typeof window !== 'undefined' ? window.innerWidth + 100 : 1000) - 50}px)`,
+            transform: `translateX(${((scrollY * 0.5) % (typeof window !== 'undefined' ? window.innerWidth + 200 : 1200)) - 100}px)`,
             transition: 'none'
           }}
         >
-          <img 
-            src="/lovable-uploads/3542d489-a1a0-4487-af09-b2d45fe061f7.png" 
-            alt="Flowing Cape" 
-            className="w-16 h-8 object-contain animate-pulse"
+          <div 
+            className="w-20 h-12 bg-gradient-to-b from-red-600 via-red-700 to-red-800 rounded-b-full shadow-lg"
             style={{
-              transform: `scaleX(${scrollDirection === 'down' ? 1 : -1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 2, 5) : -Math.min(scrollVelocity * 2, 5)}deg)`,
+              transform: `scaleX(${scrollDirection === 'down' ? 1 : -1}) rotate(${scrollDirection === 'down' ? Math.min(scrollVelocity * 2, 8) : -Math.min(scrollVelocity * 2, 8)}deg)`,
               transition: 'transform 0.3s ease-out',
-              filter: `drop-shadow(0 2px 8px rgba(220, 38, 127, ${isScrolling ? '0.8' : '0.4'})) brightness(${isScrolling ? '1.2' : '1'})`,
-              animation: 'pulse 2s ease-in-out infinite, floating 3s ease-in-out infinite'
+              filter: `drop-shadow(0 2px 12px rgba(220, 38, 127, ${isScrolling ? '0.9' : '0.5'})) brightness(${isScrolling ? '1.3' : '1'})`,
+              animation: 'floating 3s ease-in-out infinite',
+              clipPath: 'polygon(20% 0%, 80% 0%, 95% 30%, 90% 60%, 85% 80%, 70% 95%, 30% 95%, 15% 80%, 10% 60%, 5% 30%)'
             }}
           />
         </div>
