@@ -148,12 +148,12 @@ export function MultiverseTimekeeper() {
       </div>
 
       {/* Bottom Status Bar with Sliding Cape */}
-      <div className="fixed bottom-0 left-0 right-0 h-16 bg-transparent z-50 pointer-events-none">        
+      <div className="fixed bottom-0 left-0 right-0 h-20 bg-transparent z-50 pointer-events-none">        
         {/* Sliding Cape */}
         <div 
-          className="absolute top-1/2 -translate-y-1/2"
+          className="absolute bottom-8 left-0"
           style={{ 
-            transform: `translateX(${Math.min(scrollY * 1.5, typeof window !== 'undefined' ? window.innerWidth - 100 : 1200)}px)`,
+            transform: `translateX(${Math.min(scrollY * 2.5, typeof window !== 'undefined' ? window.innerWidth - 80 : 1200)}px)`,
             transition: 'none'
           }}
         >
