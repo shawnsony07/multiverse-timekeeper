@@ -43,17 +43,19 @@ export function EarthTime() {
   return (
     <div className="space-y-8">
       {/* Main Earth Time Display */}
-      <Card className="hud-panel p-8 text-center cosmic-border">
+      <Card className="hud-panel p-8 text-center">
         <div className="flex items-center justify-center gap-3 mb-6">
-          <Globe className="w-8 h-8 text-primary animate-float" />
-          <h2 className="text-3xl font-orbitron font-bold text-primary">EARTH LOCAL TIME</h2>
+          <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center">
+            <Globe className="w-4 h-4 text-white" />
+          </div>
+          <h2 className="text-3xl font-orbitron font-bold text-cyan-400">EARTH LOCAL TIME</h2>
         </div>
         
         <div className="space-y-4">
-          <div className="time-display">{formatTime(currentTime)}</div>
+          <div className="text-5xl md:text-7xl font-orbitron font-black text-cyan-400 tracking-wider time-display">{formatTime(currentTime)}</div>
           <div className="text-xl text-foreground-secondary font-orbitron">{formatDate(currentTime)}</div>
           
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
+          <div className="flex items-center justify-center gap-2 text-blue-400">
             <MapPin className="w-4 h-4" />
             <span className="text-sm font-orbitron">{timezone}</span>
           </div>
@@ -62,7 +64,7 @@ export function EarthTime() {
 
       {/* Space Agency Time Zones */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {spaceAgencyTimes.map((location) => {
+        {spaceAgencyTimes.map((location, index) => {
           const localTime = new Date().toLocaleTimeString('en-US', {
             timeZone: location.timezone,
             hour12: false,
@@ -70,16 +72,28 @@ export function EarthTime() {
             minute: '2-digit'
           });
 
+          const agencyThemes = [
+            { name: 'NASA', icon: '🚀', color: 'text-blue-400', bg: 'bg-blue-500/20' },
+            { name: 'ESA', icon: '🛰️', color: 'text-white', bg: 'bg-white/20' },
+            { name: 'JAXA', icon: '🛸', color: 'text-red-400', bg: 'bg-red-500/20' },
+            { name: 'SPACEX', icon: '🚀', color: 'text-purple-400', bg: 'bg-purple-500/20' }
+          ];
+
+          const theme = agencyThemes[index];
+
           return (
-            <Card key={location.name} className="hud-panel p-4">
+            <Card key={location.name} className="hud-panel p-4 hover:border-cyan-400/50 transition-all">
               <div className="text-center space-y-2">
-                <div className="text-sm font-orbitron font-bold text-neon-cyan">
-                  {location.agency}
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-lg">{theme.icon}</span>
+                  <div className={`text-sm font-orbitron font-bold ${theme.color}`}>
+                    {theme.name}
+                  </div>
                 </div>
-                <div className="text-2xl font-orbitron font-black text-primary">
+                <div className="text-2xl font-orbitron font-black text-cyan-400">
                   {localTime}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-foreground-secondary">
                   {location.name}
                 </div>
               </div>
@@ -90,25 +104,25 @@ export function EarthTime() {
 
       {/* Earth Stats */}
       <Card className="hud-panel p-6">
-        <h3 className="text-xl font-orbitron font-bold text-primary mb-4 flex items-center gap-2">
-          <Globe className="w-5 h-5" />
-          PLANETARY STATUS
+        <h3 className="text-xl font-orbitron font-bold text-blue-400 mb-4 flex items-center justify-center gap-2">
+          <Globe className="w-6 h-6" />
+          EARTH PLANETARY STATUS
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="space-y-2">
-            <div className="text-sm text-muted-foreground font-orbitron">ROTATION PERIOD</div>
-            <div className="text-lg font-bold text-neon-cyan">23h 56m 4s</div>
+            <div className="text-sm text-foreground-secondary font-orbitron">ROTATION PERIOD</div>
+            <div className="text-lg font-bold text-red-400">23h 56m 4s</div>
           </div>
           
           <div className="space-y-2">
-            <div className="text-sm text-muted-foreground font-orbitron">ORBITAL VELOCITY</div>
-            <div className="text-lg font-bold text-neon-purple">29.78 km/s</div>
+            <div className="text-sm text-foreground-secondary font-orbitron">ORBITAL VELOCITY</div>
+            <div className="text-lg font-bold text-blue-400">29.78 km/s</div>
           </div>
           
           <div className="space-y-2">
-            <div className="text-sm text-muted-foreground font-orbitron">DISTANCE FROM SUN</div>
-            <div className="text-lg font-bold text-neon-gold">149.6M km</div>
+            <div className="text-sm text-foreground-secondary font-orbitron">DISTANCE FROM SUN</div>
+            <div className="text-lg font-bold text-yellow-400">149.6M km</div>
           </div>
         </div>
       </Card>

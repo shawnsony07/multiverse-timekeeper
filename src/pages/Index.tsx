@@ -17,37 +17,49 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Floating Auth Button */}
-      <div className="absolute top-4 right-4 z-50">
-        <Button
-          variant={user ? "outline" : "default"}
-          size="sm"
-          onClick={handleAuthAction}
-          disabled={loading}
-          className="gap-2 bg-black/40 backdrop-blur-md border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20"
-        >
-          {user ? (
-            <>
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </>
-          ) : (
-            <>
-              <LogIn className="h-4 w-4" />
-              Sign In
-            </>
-          )}
-        </Button>
-      </div>
-
-      {/* User Info */}
-      {user && (
-        <div className="absolute top-4 left-4 z-50 flex items-center gap-2 text-sm text-cyan-300 bg-black/40 backdrop-blur-md px-3 py-2 rounded-lg border border-cyan-500/30">
-          <User className="h-4 w-4" />
-          <span>{user.email}</span>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-cyan-500/30 bg-black/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full flex items-center justify-center">
+              <span className="text-white text-xs font-bold">M</span>
+            </div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent font-orbitron">
+              Multiverse Timekeeper
+            </h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {user && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <User className="h-4 w-4" />
+                <span>{user.email}</span>
+              </div>
+            )}
+            
+            <Button
+              variant={user ? "outline" : "default"}
+              size="sm"
+              onClick={handleAuthAction}
+              disabled={loading}
+              className="gap-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-orbitron font-bold"
+            >
+              {user ? (
+                <>
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </>
+              ) : (
+                <>
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </>
+              )}
+            </Button>
+          </div>
         </div>
-      )}
+      </header>
 
       {/* Main Content */}
       <main>

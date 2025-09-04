@@ -31,12 +31,12 @@ export default {
 				'surface': 'hsl(var(--surface))',
 				'surface-elevated': 'hsl(var(--surface-elevated))',
 				
-				// Neon Colors for Cosmic UI
+				// Cosmic Colors
 				'neon-cyan': 'hsl(var(--neon-cyan))',
-				'neon-blue': 'hsl(var(--neon-blue))',
 				'neon-purple': 'hsl(var(--neon-purple))',
-				'neon-pink': 'hsl(var(--neon-pink))',
 				'neon-gold': 'hsl(var(--neon-gold))',
+				'neon-red': 'hsl(var(--neon-red))',
+				'neon-green': 'hsl(var(--neon-green))',
 				
 				// System Color Variants
 				primary: {
@@ -71,6 +71,8 @@ export default {
 			fontFamily: {
 				'orbitron': ['Orbitron', 'monospace'],
 				'inter': ['Inter', 'sans-serif'],
+				'bangers': ['Bangers', 'cursive'],
+				'comic': ['Comic Neue', 'cursive'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

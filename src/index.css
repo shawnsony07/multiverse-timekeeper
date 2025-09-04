@@ -1,40 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&family=Bangers&family=Comic+Neue:wght@300;400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Multiverse Timekeeper Design System - Futuristic Space HUD Interface */
+/* Multiverse Timekeeper Design System - Cosmic Theme */
 
 @layer base {
   :root {
-    /* Core Background & Surface Colors */
-    --background: 220 20% 8%;              /* Deep space black */
-    --background-secondary: 220 18% 12%;   /* Slightly lighter space */
-    --surface: 220 16% 15%;                /* Panel surfaces */
-    --surface-elevated: 220 14% 18%;       /* Elevated surfaces */
+    /* Core Background & Surface Colors - Cosmic Theme */
+    --background: 0 0% 5%;                 /* Deep black */
+    --background-secondary: 0 0% 8%;       /* Slightly lighter black */
+    --surface: 0 0% 10%;                   /* Panel surfaces */
+    --surface-elevated: 0 0% 12%;          /* Elevated surfaces */
     
     /* Text Colors */
-    --foreground: 210 40% 95%;             /* Primary text - cool white */
-    --foreground-secondary: 210 20% 70%;   /* Secondary text */
-    --foreground-muted: 210 15% 50%;       /* Muted text */
+    --foreground: 0 0% 98%;                /* Pure white text */
+    --foreground-secondary: 0 0% 80%;      /* Secondary text */
+    --foreground-muted: 0 0% 60%;          /* Muted text */
     
-    /* Neon Accent Colors - Cosmic HUD */
-    --neon-cyan: 195 100% 60%;             /* Electric cyan */
-    --neon-blue: 215 90% 55%;              /* Deep space blue */
+    /* Cosmic Accent Colors */
+    --neon-cyan: 195 100% 60%;             /* Bright cyan */
     --neon-purple: 270 80% 65%;            /* Cosmic purple */
-    --neon-pink: 320 85% 70%;              /* Cosmic magenta */
-    --neon-gold: 45 95% 60%;               /* Warning/special gold */
+    --neon-gold: 45 100% 50%;              /* Gold accent */
+    --neon-red: 0 85% 55%;                 /* Alert red */
+    --neon-green: 120 60% 45%;             /* Success green */
     
     /* System Colors */
-    --card: 220 16% 15%;                   /* Panel background */
-    --card-foreground: 210 40% 95%;        /* Panel text */
-    --popover: 220 14% 18%;                /* Popup background */
-    --popover-foreground: 210 40% 95%;     /* Popup text */
+    --card: 0 0% 10%;                      /* Panel background */
+    --card-foreground: 0 0% 98%;           /* Panel text */
+    --popover: 0 0% 12%;                   /* Popup background */
+    --popover-foreground: 0 0% 98%;        /* Popup text */
     
-    /* Primary - Neon Cyan Theme */
-    --primary: 195 100% 60%;               /* Electric cyan */
-    --primary-foreground: 220 20% 8%;      /* Dark text on cyan */
+    /* Primary - Cosmic Cyan Theme */
+    --primary: 195 100% 60%;               /* Neon cyan */
+    --primary-foreground: 0 0% 98%;        /* White text on cyan */
     
     /* Secondary - Space Surface */
     --secondary: 220 16% 15%;              /* Panel surface */
@@ -60,14 +60,14 @@
     --radius: 0.8rem;                     /* Slightly rounded for sci-fi feel */
     
     /* Cosmic Gradients */
-    --gradient-cosmic: linear-gradient(135deg, hsl(var(--neon-cyan)) 0%, hsl(var(--neon-purple)) 50%, hsl(var(--neon-pink)) 100%);
+    --gradient-cosmic: linear-gradient(135deg, hsl(var(--neon-cyan)) 0%, hsl(var(--neon-purple)) 50%, hsl(var(--neon-gold)) 100%);
+    --gradient-cyber: linear-gradient(135deg, hsl(var(--neon-cyan)) 0%, hsl(var(--neon-purple)) 100%);
     --gradient-space: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background-secondary)) 100%);
-    --gradient-neon: linear-gradient(90deg, hsl(var(--neon-cyan) / 0.3) 0%, hsl(var(--neon-purple) / 0.3) 100%);
     --gradient-surface: linear-gradient(135deg, hsl(var(--surface)) 0%, hsl(var(--surface-elevated)) 100%);
     
-    /* Glow Effects */
-    --glow-cyan: 0 0 20px hsl(var(--neon-cyan) / 0.5), 0 0 40px hsl(var(--neon-cyan) / 0.3), 0 0 60px hsl(var(--neon-cyan) / 0.1);
-    --glow-purple: 0 0 20px hsl(var(--neon-purple) / 0.5), 0 0 40px hsl(var(--neon-purple) / 0.3);
+    /* Cosmic Glow Effects */
+    --glow-cyan: 0 0 20px hsl(var(--neon-cyan) / 0.6), 0 0 40px hsl(var(--neon-cyan) / 0.4);
+    --glow-purple: 0 0 20px hsl(var(--neon-purple) / 0.6), 0 0 40px hsl(var(--neon-purple) / 0.4);
     --glow-gold: 0 0 20px hsl(var(--neon-gold) / 0.6), 0 0 40px hsl(var(--neon-gold) / 0.4);
     
     /* Animations */
@@ -101,8 +101,8 @@
     box-shadow: 0 8px 32px hsl(var(--background) / 0.3), inset 0 1px 0 hsl(var(--primary) / 0.2);
   }
   
-  /* Neon Text Effect */
-  .neon-text {
+  /* Cosmic Text Effects */
+  .cosmic-text {
     @apply text-primary;
     text-shadow: var(--glow-cyan);
     animation: var(--animation-glow);
@@ -132,6 +132,8 @@
   .float-animation {
     animation: var(--animation-float);
   }
+  
+
   
   /* Time Display Styling */
   .time-display {
@@ -173,56 +175,103 @@
   
   /* Utility Classes */
   .bg-cosmic-gradient { background: var(--gradient-cosmic); }
+  .bg-cyber-gradient { background: var(--gradient-cyber); }
   .bg-space-gradient { background: var(--gradient-space); }
-  .bg-neon-gradient { background: var(--gradient-neon); }
   .bg-surface-gradient { background: var(--gradient-surface); }
   
   .text-neon-cyan { @apply text-[hsl(var(--neon-cyan))]; }
   .text-neon-purple { @apply text-[hsl(var(--neon-purple))]; }
   .text-neon-gold { @apply text-[hsl(var(--neon-gold))]; }
-  .text-neon-pink { @apply text-[hsl(var(--neon-pink))]; }
+  .text-neon-red { @apply text-[hsl(var(--neon-red))]; }
+  .text-neon-green { @apply text-[hsl(var(--neon-green))]; }
   
-  /* Circular Time Display Effects */
-  .time-circle {
-    position: relative;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-    box-shadow: 
-      0 0 30px rgba(0, 255, 255, 0.3),
-      inset 0 0 30px rgba(0, 255, 255, 0.1);
+  /* Cape Running Animation */
+  .cape-runner {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    z-index: 1000;
+    transition: transform 0.1s ease-out;
   }
   
-  .mars-circle {
-    box-shadow: 
-      0 0 30px rgba(255, 69, 0, 0.4),
-      inset 0 0 30px rgba(255, 69, 0, 0.1);
+  .cape-runner.running {
+    animation: cape-flow 1.2s ease-in-out infinite;
   }
   
-  .asgard-circle {
-    box-shadow: 
-      0 0 30px rgba(255, 215, 0, 0.4),
-      inset 0 0 30px rgba(255, 215, 0, 0.1);
+  .cape-runner.idle {
+    animation: cape-sway 4s ease-in-out infinite;
   }
   
-  /* Enhanced Glow Effects */
-  .enhanced-glow-cyan {
-    text-shadow: 
-      0 0 10px rgba(0, 255, 255, 0.8),
-      0 0 20px rgba(0, 255, 255, 0.6),
-      0 0 30px rgba(0, 255, 255, 0.4);
+  @keyframes cape-flow {
+    0%, 100% { 
+      transform: translateY(0px) rotate(0deg) scale(1); 
+      filter: drop-shadow(2px 4px 8px rgba(220, 20, 60, 0.4));
+    }
+    20% { 
+      transform: translateY(-3px) rotate(2deg) scale(1.02); 
+      filter: drop-shadow(6px 8px 16px rgba(220, 20, 60, 0.6));
+    }
+    40% { 
+      transform: translateY(-1px) rotate(-1deg) scale(0.98); 
+      filter: drop-shadow(4px 6px 12px rgba(220, 20, 60, 0.5));
+    }
+    60% { 
+      transform: translateY(-2px) rotate(1deg) scale(1.01); 
+      filter: drop-shadow(5px 7px 14px rgba(220, 20, 60, 0.55));
+    }
+    80% { 
+      transform: translateY(-1px) rotate(-0.5deg) scale(0.99); 
+      filter: drop-shadow(3px 5px 10px rgba(220, 20, 60, 0.45));
+    }
   }
   
-  .enhanced-glow-red {
-    text-shadow: 
-      0 0 10px rgba(255, 69, 0, 0.8),
-      0 0 20px rgba(255, 69, 0, 0.6),
-      0 0 30px rgba(255, 69, 0, 0.4);
+  @keyframes cape-sway {
+    0%, 100% { 
+      transform: translateY(0px) rotate(0deg) scale(1); 
+      filter: drop-shadow(2px 4px 8px rgba(220, 20, 60, 0.2));
+    }
+    25% { 
+      transform: translateY(-1px) rotate(0.8deg) scale(1.01); 
+      filter: drop-shadow(3px 5px 10px rgba(220, 20, 60, 0.3));
+    }
+    50% { 
+      transform: translateY(-0.5px) rotate(-0.5deg) scale(0.99); 
+      filter: drop-shadow(2px 4px 8px rgba(220, 20, 60, 0.25));
+    }
+    75% { 
+      transform: translateY(-1.5px) rotate(0.3deg) scale(1.005); 
+      filter: drop-shadow(3px 5px 10px rgba(220, 20, 60, 0.28));
+    }
   }
   
-  .enhanced-glow-gold {
-    text-shadow: 
-      0 0 10px rgba(255, 215, 0, 0.8),
-      0 0 20px rgba(255, 215, 0, 0.6),
-      0 0 30px rgba(255, 215, 0, 0.4);
+  /* Cosmic themed glow effects */
+  .cosmic-glow-cyan {
+    text-shadow: var(--glow-cyan);
+    animation: cosmic-glow-cyan 2s ease-in-out infinite alternate;
+  }
+  
+  .cosmic-glow-purple {
+    text-shadow: var(--glow-purple);
+    animation: cosmic-glow-purple 2s ease-in-out infinite alternate;
+  }
+  
+  .cosmic-glow-gold {
+    text-shadow: var(--glow-gold);
+    animation: cosmic-glow-gold 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes cosmic-glow-cyan {
+    from { text-shadow: var(--glow-cyan); }
+    to { text-shadow: var(--glow-cyan), var(--glow-purple); }
+  }
+  
+  @keyframes cosmic-glow-purple {
+    from { text-shadow: var(--glow-purple); }
+    to { text-shadow: var(--glow-purple), var(--glow-cyan); }
+  }
+  
+  @keyframes cosmic-glow-gold {
+    from { text-shadow: var(--glow-gold); }
+    to { text-shadow: var(--glow-gold), var(--glow-cyan); }
   }
 }

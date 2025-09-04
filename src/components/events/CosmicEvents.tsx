@@ -66,9 +66,9 @@ export function CosmicEvents() {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'go': return 'text-primary';
-      case 'tbd': return 'text-neon-gold';
-      case 'hold': return 'text-destructive';
+      case 'go': return 'text-green-400';
+      case 'tbd': return 'text-yellow-400';
+      case 'hold': return 'text-red-400';
       default: return 'text-foreground-secondary';
     }
   };
@@ -77,28 +77,28 @@ export function CosmicEvents() {
     <div className="space-y-8">
       {/* Rocket Launches */}
       <div>
-        <h2 className="text-2xl font-orbitron font-bold text-primary mb-6 flex items-center gap-2">
-          <Rocket className="w-6 h-6" />
+        <h2 className="text-2xl font-orbitron font-bold text-yellow-400 mb-6 flex items-center justify-center gap-2">
+          <span className="text-xl">🚀</span>
           UPCOMING LAUNCHES
         </h2>
         
         {loading ? (
           <Card className="hud-panel p-6">
-            <div className="text-center text-muted-foreground">
-              Synchronizing with mission control...
+            <div className="text-center text-foreground-secondary">
+              Loading launch data...
             </div>
           </Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {launches.slice(0, 4).map((launch) => (
-              <Card key={launch.id} className="hud-panel p-4 hover:cosmic-pulse transition-all duration-300">
+              <Card key={launch.id} className="hud-panel p-4 hover:border-cyan-400/50 transition-all duration-300">
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="font-orbitron font-bold text-primary text-sm leading-tight">
+                      <h3 className="font-orbitron font-bold text-yellow-400 text-sm leading-tight">
                         {launch.name}
                       </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-foreground-secondary mt-1">
                         {launch.rocket?.configuration?.manufacturer?.name || 'Unknown'} • {launch.rocket?.configuration?.name || 'Unknown Rocket'}
                       </p>
                     </div>
@@ -110,7 +110,7 @@ export function CosmicEvents() {
                   <div className="flex items-center gap-4 text-xs">
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      <span className="font-orbitron font-bold text-neon-cyan">
+                      <span className="font-orbitron font-bold text-red-400">
                         {getTimeUntilLaunch(launch.net)}
                       </span>
                     </div>
@@ -134,7 +134,7 @@ export function CosmicEvents() {
 
       {/* Cosmic Events */}
       <div>
-        <h2 className="text-2xl font-orbitron font-bold text-primary mb-6 flex items-center gap-2">
+        <h2 className="text-2xl font-orbitron font-bold text-purple-400 mb-6 flex items-center gap-2">
           <Star className="w-6 h-6" />
           COSMIC EVENTS
         </h2>
@@ -145,11 +145,11 @@ export function CosmicEvents() {
             const timeUntil = getTimeUntilEvent(event.date);
             
             return (
-              <Card key={event.id} className="hud-panel p-4 hover:animate-glow transition-all duration-300">
+              <Card key={event.id} className="hud-panel p-4 hover:border-purple-400/50 transition-all duration-300">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <IconComponent className="w-5 h-5 text-neon-purple" />
-                    <h3 className="font-orbitron font-bold text-primary text-sm">
+                    <IconComponent className="w-5 h-5 text-purple-400" />
+                    <h3 className="font-orbitron font-bold text-purple-400 text-sm">
                       {event.name}
                     </h3>
                   </div>
@@ -157,7 +157,7 @@ export function CosmicEvents() {
                   <div className="flex items-center gap-4 text-xs">
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      <span className="font-orbitron font-bold text-neon-purple">
+                      <span className="font-orbitron font-bold text-purple-400">
                         {timeUntil}
                       </span>
                     </div>
@@ -174,7 +174,7 @@ export function CosmicEvents() {
                   </p>
                   
                   {event.visibility && (
-                    <p className="text-xs text-neon-gold">
+                    <p className="text-xs text-yellow-400">
                       📍 {event.visibility}
                     </p>
                   )}
@@ -187,13 +187,13 @@ export function CosmicEvents() {
 
       {/* Next Major Event Countdown */}
       <Card className="hud-panel p-8 text-center cosmic-border">
-        <h2 className="text-xl font-orbitron font-bold text-primary mb-4">
+        <h2 className="text-xl font-orbitron font-bold text-cyan-400 mb-4">
           NEXT MAJOR EVENT
         </h2>
         
         {launches.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-2xl font-orbitron font-black text-neon-cyan">
+            <h3 className="text-2xl font-orbitron font-black text-cyan-400">
               {launches[0].name}
             </h3>
             <div className="time-display text-3xl">

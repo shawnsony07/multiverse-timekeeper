@@ -1,0 +1,46 @@
+<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="capeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B0000;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#DC143C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B22222;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Cape body with flowing folds -->
+  <path d="M 20 20 
+           Q 30 15 40 25
+           Q 50 35 60 30
+           Q 70 25 80 35
+           Q 90 45 100 40
+           Q 110 35 120 45
+           Q 130 55 140 50
+           Q 150 45 160 55
+           Q 170 65 180 60
+           Q 190 55 200 65
+           L 200 120
+           Q 190 115 180 120
+           Q 170 125 160 120
+           Q 150 115 140 120
+           Q 130 125 120 120
+           Q 110 115 100 120
+           Q 90 125 80 120
+           Q 70 115 60 120
+           Q 50 125 40 120
+           Q 30 115 20 120
+           Z" 
+        fill="url(#capeGradient)" 
+        filter="url(#shadow)"/>
+  
+  <!-- Cape collar/fastening -->
+  <ellipse cx="100" cy="20" rx="15" ry="8" fill="#4B0000" opacity="0.8"/>
+  
+  <!-- Folds and creases -->
+  <path d="M 40 30 Q 50 35 60 30" stroke="#4B0000" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M 80 40 Q 90 45 100 40" stroke="#4B0000" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M 120 50 Q 130 55 140 50" stroke="#4B0000" stroke-width="1" fill="none" opacity="0.6"/>
+  <path d="M 160 60 Q 170 65 180 60" stroke="#4B0000" stroke-width="1" fill="none" opacity="0.6"/>
+</svg>

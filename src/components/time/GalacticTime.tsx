@@ -40,35 +40,39 @@ export function GalacticTime() {
 
   const marsSol = calculateMarsSol(currentTime);
 
-  // Fictional galactic realms for Marvel-inspired multiverse
+  // Galactic realms and dimensions
   const galacticRealms = [
     {
       name: 'Asgard',
       timeMultiplier: 1.5,
       description: 'Realm of the Gods',
-      color: 'text-neon-gold',
-      icon: Stars
+      color: 'text-yellow-400',
+      icon: Stars,
+      symbol: '⚡'
     },
     {
-      name: 'Xandar',
-      timeMultiplier: 0.8,
-      description: 'Nova Corps HQ',
-      color: 'text-neon-cyan',
-      icon: Globe
+      name: 'Wakanda',
+      timeMultiplier: 1.0,
+      description: 'Advanced Civilization',
+      color: 'text-purple-400',
+      icon: Globe,
+      symbol: '🐾'
     },
     {
-      name: 'Sakaar',
-      timeMultiplier: 2.3,
-      description: 'Contest Planet',
-      color: 'text-neon-purple',
-      icon: Orbit
+      name: 'Quantum Realm',
+      timeMultiplier: 0.1,
+      description: 'Microscopic Dimension',
+      color: 'text-blue-400',
+      icon: Orbit,
+      symbol: '🐜'
     },
     {
-      name: 'Knowhere',
-      timeMultiplier: 0.6,
-      description: 'Mining Station',
-      color: 'text-neon-pink',
-      icon: Stars
+      name: 'Dark Dimension',
+      timeMultiplier: 3.0,
+      description: 'Mystical Realm',
+      color: 'text-green-400',
+      icon: Stars,
+      symbol: '🔮'
     }
   ];
 
@@ -86,18 +90,20 @@ export function GalacticTime() {
   return (
     <div className="space-y-8">
       {/* Mars Time */}
-      <Card className="hud-panel p-8 text-center cosmic-border">
+      <Card className="hud-panel p-8 text-center">
         <div className="flex items-center justify-center gap-3 mb-6">
-          <Globe className="w-8 h-8 text-destructive animate-float" />
-          <h2 className="text-3xl font-orbitron font-bold text-destructive">MARS LOCAL TIME</h2>
+          <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse">
+            <span className="text-white text-xs font-bold">🔴</span>
+          </div>
+          <h2 className="text-3xl font-orbitron font-bold text-red-400">MARS SOL TIME</h2>
         </div>
         
         <div className="space-y-4">
-          <div className="time-display mars-time">{marsSol.time}</div>
+          <div className="text-5xl md:text-7xl font-orbitron font-black text-red-400 tracking-wider time-display">{marsSol.time}</div>
           <div className="text-xl text-foreground-secondary font-orbitron">
             Sol {marsSol.sol} • Martian Calendar
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-blue-400">
             1 Sol = 24h 39m 35s Earth time
           </div>
         </div>
@@ -110,10 +116,10 @@ export function GalacticTime() {
           const realmTime = calculateRealmTime(realm.timeMultiplier);
           
           return (
-            <Card key={realm.name} className="hud-panel p-6">
+            <Card key={realm.name} className="hud-panel p-6 hover:border-cyan-400/50 transition-all">
               <div className="text-center space-y-4">
-                <div className="flex items-center justify-center gap-2">
-                  <IconComponent className={`w-6 h-6 ${realm.color} animate-glow`} />
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-2xl">{realm.symbol}</span>
                   <h3 className={`text-xl font-orbitron font-bold ${realm.color}`}>
                     {realm.name.toUpperCase()}
                   </h3>
@@ -123,11 +129,11 @@ export function GalacticTime() {
                   {realmTime}
                 </div>
                 
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-foreground-secondary">
                   {realm.description}
                 </div>
                 
-                <div className="text-xs text-foreground-secondary">
+                <div className="text-xs text-blue-400">
                   Time Flow: {realm.timeMultiplier}x Earth Rate
                 </div>
               </div>
@@ -138,25 +144,25 @@ export function GalacticTime() {
 
       {/* Galactic Coordinates */}
       <Card className="hud-panel p-6">
-        <h3 className="text-xl font-orbitron font-bold text-primary mb-4 flex items-center gap-2">
-          <Orbit className="w-5 h-5" />
+        <h3 className="text-xl font-orbitron font-bold text-purple-400 mb-4 flex items-center justify-center gap-2">
+          <span className="text-lg">🌌</span>
           GALACTIC COORDINATES
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           <div className="space-y-2">
-            <div className="text-sm text-muted-foreground font-orbitron">GALACTIC LONGITUDE</div>
-            <div className="text-lg font-bold text-neon-cyan">0° 0' 0"</div>
+            <div className="text-sm text-foreground-secondary font-orbitron">GALACTIC LONGITUDE</div>
+            <div className="text-lg font-bold text-blue-400">0° 0' 0"</div>
           </div>
           
           <div className="space-y-2">
-            <div className="text-sm text-muted-foreground font-orbitron">GALACTIC LATITUDE</div>
-            <div className="text-lg font-bold text-neon-purple">-60° 11' 20"</div>
+            <div className="text-sm text-foreground-secondary font-orbitron">GALACTIC LATITUDE</div>
+            <div className="text-lg font-bold text-red-400">-60° 11' 20"</div>
           </div>
           
           <div className="space-y-2">
-            <div className="text-sm text-muted-foreground font-orbitron">DISTANCE TO CENTER</div>
-            <div className="text-lg font-bold text-neon-gold">26,000 LY</div>
+            <div className="text-sm text-foreground-secondary font-orbitron">DISTANCE TO CENTER</div>
+            <div className="text-lg font-bold text-yellow-400">26,000 LY</div>
           </div>
         </div>
       </Card>
