@@ -29,7 +29,7 @@ export function MultiverseTimekeeper() {
     if (activeTab === 'wormhole') {
       return "/lovable-uploads/wormhole.gif";
     }
-    // events (default)
+    // events (default) 
     return "/lovable-uploads/infinity.gif";
   }, [activeTab]);
 
