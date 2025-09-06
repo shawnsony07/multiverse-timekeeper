@@ -42,7 +42,7 @@ export function EarthTime() {
     { name: 'NASA (Houston)', timezone: 'America/Chicago', agency: 'NASA' },
     { name: 'ESA (Paris)', timezone: 'Europe/Paris', agency: 'ESA' },
     { name: 'JAXA (Tokyo)', timezone: 'Asia/Tokyo', agency: 'JAXA' },
-    { name: 'ISRO (Bangalore)', timezone: 'Asia/Kolkata', agency: 'ISRO' }
+    { name: 'CSA (Ottawa)', timezone: 'America/Toronto', agency: 'CSA' }
   ];
 
   // Use saved clocks if user is logged in and has clocks, otherwise use defaults
@@ -110,7 +110,7 @@ export function EarthTime() {
             { name: 'NASA', icon: '🚀', color: 'text-blue-400', bg: 'bg-blue-500/20' },
             { name: 'ESA', icon: '🛰️', color: 'text-white', bg: 'bg-white/20' },
             { name: 'JAXA', icon: '🛸', color: 'text-red-400', bg: 'bg-red-500/20' },
-            { name: 'ISRO', icon: '🇮🇳', color: 'text-orange-400', bg: 'bg-orange-500/20' }
+            { name: 'CSA', icon: '🍁', color: 'text-red-500', bg: 'bg-red-600/20' }
           ];
 
           const theme = agencyThemes.find(t => location.agency.includes(t.name)) || 
