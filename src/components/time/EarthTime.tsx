@@ -1,15 +1,48 @@
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Globe, MapPin, Save, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Globe, MapPin, Save, Trash2, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserClocks } from '@/hooks/useUserClocks';
 
 export function EarthTime() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
   const { clocks, loading, saveClock, deleteClock } = useUserClocks();
+
+  // Extended list of countries and their timezones
+  const countryTimezones = [
+    { country: 'United States (New York)', timezone: 'America/New_York', flag: '🇺🇸' },
+    { country: 'United States (Los Angeles)', timezone: 'America/Los_Angeles', flag: '🇺🇸' },
+    { country: 'United Kingdom (London)', timezone: 'Europe/London', flag: '🇬🇧' },
+    { country: 'Germany (Berlin)', timezone: 'Europe/Berlin', flag: '🇩🇪' },
+    { country: 'France (Paris)', timezone: 'Europe/Paris', flag: '🇫🇷' },
+    { country: 'Japan (Tokyo)', timezone: 'Asia/Tokyo', flag: '🇯🇵' },
+    { country: 'Australia (Sydney)', timezone: 'Australia/Sydney', flag: '🇦🇺' },
+    { country: 'India (New Delhi)', timezone: 'Asia/Kolkata', flag: '🇮🇳' },
+    { country: 'China (Beijing)', timezone: 'Asia/Shanghai', flag: '🇨🇳' },
+    { country: 'Brazil (São Paulo)', timezone: 'America/Sao_Paulo', flag: '🇧🇷' },
+    { country: 'Russia (Moscow)', timezone: 'Europe/Moscow', flag: '🇷🇺' },
+    { country: 'Canada (Toronto)', timezone: 'America/Toronto', flag: '🇨🇦' },
+    { country: 'South Korea (Seoul)', timezone: 'Asia/Seoul', flag: '🇰🇷' },
+    { country: 'Mexico (Mexico City)', timezone: 'America/Mexico_City', flag: '🇲🇽' },
+    { country: 'Italy (Rome)', timezone: 'Europe/Rome', flag: '🇮🇹' },
+    { country: 'Spain (Madrid)', timezone: 'Europe/Madrid', flag: '🇪🇸' },
+    { country: 'Netherlands (Amsterdam)', timezone: 'Europe/Amsterdam', flag: '🇳🇱' },
+    { country: 'Singapore', timezone: 'Asia/Singapore', flag: '🇸🇬' },
+    { country: 'United Arab Emirates (Dubai)', timezone: 'Asia/Dubai', flag: '🇦🇪' },
+    { country: 'South Africa (Johannesburg)', timezone: 'Africa/Johannesburg', flag: '🇿🇦' },
+    { country: 'Egypt (Cairo)', timezone: 'Africa/Cairo', flag: '🇪🇬' },
+    { country: 'Turkey (Istanbul)', timezone: 'Europe/Istanbul', flag: '🇹🇷' },
+    { country: 'Thailand (Bangkok)', timezone: 'Asia/Bangkok', flag: '🇹🇭' },
+    { country: 'Argentina (Buenos Aires)', timezone: 'America/Argentina/Buenos_Aires', flag: '🇦🇷' },
+    { country: 'Chile (Santiago)', timezone: 'America/Santiago', flag: '🇨🇱' },
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,6 +85,19 @@ export function EarthTime() {
     agency: clock.name.split(' ')[0] || 'CUSTOM'
   })) : defaultSpaceAgencyTimes;
 
+  const handleSaveCustomClock = async () => {
+    if (!selectedCountry || !user) return;
+    
+    const country = countryTimezones.find(c => c.timezone === selectedCountry);
+    if (country) {
+      const success = await saveClock(country.timezone, '24h', country.country);
+      if (success) {
+        setIsDialogOpen(false);
+        setSelectedCountry('');
+      }
+    }
+  };
+
   const handleSaveClock = async (location: any) => {
     if (!user) return;
     await saveClock(location.timezone, '24h', location.name);
@@ -89,10 +135,68 @@ export function EarthTime() {
 
       {/* Show message when user is signed in */}
       {user && (
-        <Card className="hud-panel p-4 text-center">
+        <Card className="hud-panel p-4 text-center space-y-3">
           <p className="text-sm text-foreground-secondary font-orbitron">
             {clocks.length > 0 ? 'Your saved clocks are displayed below' : 'Save your preferred clocks using the save buttons below'}
           </p>
+          
+          {/* Add More Countries Button */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="font-orbitron text-xs"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add More Countries
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="hud-panel border-cyan-400/20">
+              <DialogHeader>
+                <DialogTitle className="text-cyan-400 font-orbitron">Add Country Clock</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a country/timezone" />
+                  </SelectTrigger>
+                  <SelectContent className="hud-panel border-cyan-400/20 max-h-60">
+                    {countryTimezones.map((country) => (
+                      <SelectItem key={country.timezone} value={country.timezone}>
+                        <div className="flex items-center gap-2">
+                          <span>{country.flag}</span>
+                          <span>{country.country}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <div className="flex gap-2 justify-end">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      setIsDialogOpen(false);
+                      setSelectedCountry('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    size="sm"
+                    onClick={handleSaveCustomClock}
+                    disabled={!selectedCountry || loading}
+                    className="bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    <Save className="w-3 h-3 mr-1" />
+                    Save Clock
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </Card>
       )}
 
