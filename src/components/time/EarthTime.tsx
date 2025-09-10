@@ -3,17 +3,131 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Globe, MapPin, Save, Trash2, Plus } from 'lucide-react';
+import { Globe, MapPin, Save, Trash2, Plus, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useUserClocks } from '@/hooks/useUserClocks';
 
 export function EarthTime() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [selectedCountry, setSelectedCountry] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [savedClocks, setSavedClocks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  
   const { user } = useAuth();
-  const { clocks, loading, saveClock, deleteClock } = useUserClocks();
+  
+  // Simple save/delete functions that use local storage as fallback
+  const saveClock = async (planet: string, timeFormat: string = '24h', name?: string) => {
+    if (!user) return false;
+    
+    try {
+      // For now, use localStorage as a simple fallback
+      const newClock = {
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        planet,
+        time_format: timeFormat,
+        name: name || `${planet} Clock`,
+        created_at: new Date().toISOString(),
+        user_id: user.id
+      };
+      
+      const storageKey = 'multiverse-clocks';
+      const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      
+      // Check if this clock already exists for this user
+      const existingClock = existing.find((clock: any) => 
+        clock.user_id === user.id && 
+        clock.planet === planet && 
+        clock.name === newClock.name
+      );
+      
+      if (existingClock) {
+        console.log('Clock already exists for this user and location');
+        return false;
+      }
+      
+      const updated = [...existing, newClock];
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      
+      // Update local state with user's clocks only
+      const userClocks = updated.filter((clock: any) => clock.user_id === user.id);
+      setSavedClocks(userClocks);
+      
+      console.log(`Saved clock for user ${user.id}:`, newClock);
+      return true;
+    } catch (error) {
+      console.error('Error saving clock:', error);
+      return false;
+    }
+  };
+  
+  const deleteClock = async (clockId: string) => {
+    if (!user) return false;
+    
+    try {
+      const storageKey = 'multiverse-clocks';
+      const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      
+      // Only allow deleting clocks owned by current user
+      const clockToDelete = existing.find((clock: any) => 
+        clock.id === clockId && clock.user_id === user.id
+      );
+      
+      if (!clockToDelete) {
+        console.log('Clock not found or not owned by current user');
+        return false;
+      }
+      
+      const updated = existing.filter((clock: any) => clock.id !== clockId);
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      
+      // Update local state with user's clocks only
+      const userClocks = updated.filter((clock: any) => clock.user_id === user.id);
+      setSavedClocks(userClocks);
+      
+      console.log(`Deleted clock ${clockId} for user ${user.id}`);
+      return true;
+    } catch (error) {
+      console.error('Error deleting clock:', error);
+      return false;
+    }
+  };
+  
+  // Load saved clocks on component mount and when user changes
+  useEffect(() => {
+    const loadUserClocks = () => {
+      if (user) {
+        try {
+          const storageKey = 'multiverse-clocks';
+          const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          const userClocks = existing.filter((clock: any) => clock.user_id === user.id);
+          setSavedClocks(userClocks);
+          console.log(`Loaded ${userClocks.length} clocks for user ${user.id}:`, userClocks);
+        } catch (error) {
+          console.error('Error loading clocks:', error);
+          setSavedClocks([]);
+        }
+      } else {
+        setSavedClocks([]);
+        console.log('No user logged in, cleared saved clocks');
+      }
+    };
+    
+    loadUserClocks();
+  }, [user]);
+  
+  const clocks = savedClocks;
+  
+  // Debug helper - can be removed later
+  useEffect(() => {
+    if (user) {
+      const storageKey = 'multiverse-clocks';
+      const allClocks = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      console.log('All clocks in localStorage:', allClocks);
+      console.log('Current user ID:', user.id);
+      console.log('User clocks loaded:', savedClocks);
+    }
+  }, [savedClocks, user]);
 
   // Extended list of countries and their timezones
   const countryTimezones = [
@@ -78,12 +192,56 @@ export function EarthTime() {
     { name: 'CSA (Ottawa)', timezone: 'America/Toronto', agency: 'CSA' }
   ];
 
-  // Use saved clocks if user is logged in and has clocks, otherwise use defaults
-  const displayClocks = user && clocks.length > 0 ? clocks.map(clock => ({
-    name: clock.name,
-    timezone: clock.planet, // Using planet field as timezone for now
-    agency: clock.name.split(' ')[0] || 'CUSTOM'
-  })) : defaultSpaceAgencyTimes;
+  // Helper function to get flag for a timezone
+  const getFlagForTimezone = (timezone: string) => {
+    const country = countryTimezones.find(c => c.timezone === timezone);
+    return country ? country.flag : '🌍';
+  };
+
+  // Helper function to get agency code for a clock
+  const getAgencyCode = (clockName: string, timezone: string) => {
+    // Check if it's a space agency clock
+    const spaceAgencies = ['NASA', 'ESA', 'JAXA', 'CSA'];
+    for (const agency of spaceAgencies) {
+      if (clockName.includes(agency)) return agency;
+    }
+    
+    // For country clocks, return the flag instead of agency name
+    return getFlagForTimezone(timezone);
+  };
+
+  // Combine default space agency clocks with user's saved clocks, avoiding duplicates
+  const displayClocks = (() => {
+    if (!user) {
+      return defaultSpaceAgencyTimes;
+    }
+
+    // Convert saved clocks to display format
+    const savedDisplayClocks = clocks.map(clock => ({
+      name: clock.name || `${clock.planet} Clock`,
+      timezone: clock.planet,
+      agency: getAgencyCode(clock.name || '', clock.planet),
+      id: clock.id,
+      isSaved: true
+    }));
+
+    // Filter out defaults that are already saved by user
+    const filteredDefaults = defaultSpaceAgencyTimes.filter(defaultClock => {
+      return !savedDisplayClocks.some(savedClock => 
+        savedClock.name === defaultClock.name || 
+        (savedClock.timezone === defaultClock.timezone && savedClock.name.includes(defaultClock.agency))
+      );
+    });
+
+    // Add agency property to defaults to match saved clocks format
+    const defaultsWithFlags = filteredDefaults.map(clock => ({
+      ...clock,
+      isSaved: false
+    }));
+
+    // Combine them: saved clocks first, then remaining defaults
+    return [...savedDisplayClocks, ...defaultsWithFlags];
+  })();
 
   const handleSaveCustomClock = async () => {
     if (!selectedCountry || !user) return;
@@ -107,8 +265,15 @@ export function EarthTime() {
     await deleteClock(clockId);
   };
 
-  const getSavedClockId = (locationName: string) => {
-    return clocks.find(clock => clock.name === locationName)?.id;
+  const getSavedClockId = (location: any) => {
+    // If the location has an id, it's already a saved clock
+    if (location.id) return location.id;
+    
+    // Otherwise, check if there's a saved clock that matches this location
+    return clocks.find(clock => 
+      clock.name === location.name || 
+      (clock.planet === location.timezone && clock.name?.includes(location.agency))
+    )?.id;
   };
 
   return (
@@ -217,14 +382,20 @@ export function EarthTime() {
             { name: 'CSA', icon: '🍁', color: 'text-red-500', bg: 'bg-red-600/20' }
           ];
 
-          const theme = agencyThemes.find(t => location.agency.includes(t.name)) || 
-                       { name: 'CUSTOM', icon: '🌍', color: 'text-green-400', bg: 'bg-green-500/20' };
+          // Check if it's a space agency or a country flag
+          const spaceAgencyTheme = agencyThemes.find(t => location.agency === t.name);
+          const theme = spaceAgencyTheme || {
+            name: location.agency, // This will be the flag emoji for countries
+            icon: location.agency, // Use the flag as the icon
+            color: 'text-green-400', 
+            bg: 'bg-green-500/20'
+          };
 
-          const savedClockId = getSavedClockId(location.name);
-          const isFromDefaults = defaultSpaceAgencyTimes.some(def => def.name === location.name);
+          const savedClockId = getSavedClockId(location);
+          const isFromDefaults = !location.isSaved; // If it's not marked as saved, it's from defaults
 
           return (
-            <Card key={location.name} className="hud-panel p-4 hover:border-cyan-400/50 transition-all">
+            <Card key={location.id ? `saved-${location.id}` : `default-${location.name}`} className="hud-panel p-4 hover:border-cyan-400/50 transition-all">
               <div className="text-center space-y-2">
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-lg">{theme.icon}</span>

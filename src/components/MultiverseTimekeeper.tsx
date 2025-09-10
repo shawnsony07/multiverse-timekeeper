@@ -1,10 +1,58 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Component, ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, Rocket, Zap, Globe } from 'lucide-react';
+import { Clock, Rocket, Zap, Globe, AlertTriangle } from 'lucide-react';
 import { EarthTime } from '@/components/time/EarthTime';
 import { GalacticTime } from '@/components/time/GalacticTime';
 import { CosmicEvents } from '@/components/events/CosmicEvents';
 import { WormholeMode } from '@/components/wormhole/WormholeMode';
+
+// Error Boundary Component
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error('Component error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
+// Component Error Fallback
+interface ComponentErrorProps {
+  name: string;
+}
+
+const ComponentError = ({ name }: ComponentErrorProps) => (
+  <div className="flex flex-col items-center justify-center p-8 hud-panel">
+    <AlertTriangle className="w-8 h-8 text-destructive mb-2" />
+    <p className="font-orbitron text-destructive font-bold">{name} Component Error</p>
+    <p className="text-sm text-foreground-secondary text-center mt-2">
+      This component failed to load. The cosmic systems are still functional.
+    </p>
+  </div>
+);
 
 export function MultiverseTimekeeper() {
   const [activeTab, setActiveTab] = useState("now");
@@ -16,6 +64,8 @@ export function MultiverseTimekeeper() {
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const CAPE_WIDTH_PX = 192; // aligns with w-48 (12rem * 16)
 
   // Choose background per tab (NOW & EVENTS share same)
@@ -34,68 +84,124 @@ export function MultiverseTimekeeper() {
   }, [activeTab]);
 
   useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout;
-    let lastScrollY = 0;
-    let lastScrollTime = Date.now();
-    
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const currentTime = Date.now();
-      const timeDelta = currentTime - lastScrollTime;
-      const scrollDelta = currentScrollY - lastScrollY;
+    try {
+      let scrollTimeout: NodeJS.Timeout;
+      let lastScrollY = 0;
+      let lastScrollTime = Date.now();
       
-      // Calculate scroll velocity
-      const velocity = Math.abs(scrollDelta) / timeDelta;
-      setScrollVelocity(velocity);
+      const handleScroll = () => {
+        try {
+          const currentScrollY = window.scrollY;
+          const currentTime = Date.now();
+          const timeDelta = currentTime - lastScrollTime;
+          const scrollDelta = currentScrollY - lastScrollY;
+          
+          // Calculate scroll velocity
+          const velocity = Math.abs(scrollDelta) / timeDelta;
+          setScrollVelocity(velocity);
+          
+          // Determine scroll direction
+          if (scrollDelta > 0) {
+            setScrollDirection('down');
+          } else if (scrollDelta < 0) {
+            setScrollDirection('up');
+          }
+          
+          setScrollY(currentScrollY);
+          setIsScrolling(true);
+          
+          lastScrollY = currentScrollY;
+          lastScrollTime = currentTime;
+          
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(() => {
+            setIsScrolling(false);
+            setScrollVelocity(0);
+          }, 150);
+        } catch (err) {
+          console.error('Error in scroll handler:', err);
+        }
+      };
       
-      // Determine scroll direction
-      if (scrollDelta > 0) {
-        setScrollDirection('down');
-      } else if (scrollDelta < 0) {
-        setScrollDirection('up');
-      }
+      const recalc = () => {
+        try {
+          const doc = document.documentElement;
+          const body = document.body;
+          const scrollHeight = Math.max(
+            body.scrollHeight || 0,
+            doc.scrollHeight || 0,
+            body.offsetHeight || 0,
+            doc.offsetHeight || 0,
+            body.clientHeight || 0,
+            doc.clientHeight || 0
+          );
+          const max = Math.max(1, scrollHeight - window.innerHeight);
+          setMaxScroll(max);
+          setViewportWidth(window.innerWidth);
+        } catch (err) {
+          console.error('Error in recalc:', err);
+        }
+      };
       
-      setScrollY(currentScrollY);
-      setIsScrolling(true);
+      recalc();
       
-      lastScrollY = currentScrollY;
-      lastScrollTime = currentTime;
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', recalc);
+      window.addEventListener('load', recalc);
       
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        setIsScrolling(false);
-        setScrollVelocity(0);
-      }, 150);
-    };
-    
-    const recalc = () => {
-      const doc = document.documentElement;
-      const body = document.body;
-      const scrollHeight = Math.max(
-        body.scrollHeight,
-        doc.scrollHeight,
-        body.offsetHeight,
-        doc.offsetHeight,
-        body.clientHeight,
-        doc.clientHeight
-      );
-      const max = Math.max(1, scrollHeight - window.innerHeight);
-      setMaxScroll(max);
-      setViewportWidth(window.innerWidth);
-    };
-    
-    recalc();
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', recalc);
-    window.addEventListener('load', recalc);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', recalc);
-      window.removeEventListener('load', recalc);
-      clearTimeout(scrollTimeout);
-    };
+      // Set loading to false after a brief delay to ensure everything is ready
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
+      
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('resize', recalc);
+        window.removeEventListener('load', recalc);
+        clearTimeout(scrollTimeout);
+      };
+    } catch (err) {
+      console.error('Error in MultiverseTimekeeper initialization:', err);
+      setError('Failed to initialize Multiverse Timekeeper');
+      setIsLoading(false);
+    }
   }, []);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-xl font-orbitron cosmic-text">Loading Multiverse...</p>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+            <span className="text-sm text-foreground-secondary">Initializing cosmic systems</span>
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <AlertTriangle className="w-16 h-16 text-destructive" />
+          <p className="text-xl font-orbitron text-destructive">System Error</p>
+          <p className="text-foreground-secondary">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 font-orbitron"
+          >
+            Restart System
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -103,7 +209,7 @@ export function MultiverseTimekeeper() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
         style={{
-          backgroundImage: `url(${backgroundUrl}?v=1), url('/lovable-uploads/39c9e878-3cf2-4ba3-85b9-521e304dea25.png')`,
+          backgroundImage: `url(${backgroundUrl}?v=1), url('/lovable-uploads/39c9e878-3cf2-4ba3-85b9-521e304dea25.png'), linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--surface)) 100%)`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
@@ -169,19 +275,27 @@ export function MultiverseTimekeeper() {
 
             {/* Tab Contents */}
             <TabsContent value="now" className="space-y-6">
-              <EarthTime />
+              <ErrorBoundary fallback={<ComponentError name="EarthTime" />}>
+                <EarthTime />
+              </ErrorBoundary>
             </TabsContent>
 
             <TabsContent value="galactic" className="space-y-6">
-              <GalacticTime />
+              <ErrorBoundary fallback={<ComponentError name="GalacticTime" />}>
+                <GalacticTime />
+              </ErrorBoundary>
             </TabsContent>
 
             <TabsContent value="events" className="space-y-6">
-              <CosmicEvents />
+              <ErrorBoundary fallback={<ComponentError name="CosmicEvents" />}>
+                <CosmicEvents />
+              </ErrorBoundary>
             </TabsContent>
 
             <TabsContent value="wormhole" className="space-y-6 wormhole-bg p-6 rounded-lg">
-              <WormholeMode />
+              <ErrorBoundary fallback={<ComponentError name="WormholeMode" />}>
+                <WormholeMode />
+              </ErrorBoundary>
             </TabsContent>
           </Tabs>
         </div>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Test</title>
+</head>
+<body>
+    <h1>LocalStorage Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        function testLocalStorage() {
+            try {
+                // Test basic localStorage functionality
+                const testKey = 'test-key';
+                const testValue = { test: 'data', timestamp: Date.now() };
+                
+                // Save data
+                localStorage.setItem(testKey, JSON.stringify(testValue));
+                console.log('Saved test data:', testValue);
+                
+                // Load data
+                const loaded = JSON.parse(localStorage.getItem(testKey) || '{}');
+                console.log('Loaded test data:', loaded);
+                
+                // Test multiverse clocks storage
+                const clocksData = localStorage.getItem('multiverse-clocks');
+                const galacticClocksData = localStorage.getItem('multiverse-galactic-clocks');
+                
+                console.log('Multiverse clocks data:', clocksData);
+                console.log('Galactic clocks data:', galacticClocksData);
+                
+                if (clocksData) {
+                    const clocks = JSON.parse(clocksData);
+                    console.log('Parsed clocks:', clocks);
+                }
+                
+                if (galacticClocksData) {
+                    const galacticClocks = JSON.parse(galacticClocksData);
+                    console.log('Parsed galactic clocks:', galacticClocks);
+                }
+                
+                document.getElementById('result').innerHTML = `
+                    <p>localStorage test successful!</p>
+                    <p>Multiverse clocks: ${clocksData ? JSON.parse(clocksData).length : 0} items</p>
+                    <p>Galactic clocks: ${galacticClocksData ? JSON.parse(galacticClocksData).length : 0} items</p>
+                `;
+                
+                // Clean up test data
+                localStorage.removeItem(testKey);
+                
+            } catch (error) {
+                console.error('localStorage test failed:', error);
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run test on page load
+        testLocalStorage();
+        
+        // Also expose it globally for manual testing
+        window.testLocalStorage = testLocalStorage;
+        
+        // Helper function to clear all multiverse data (for testing)
+        window.clearMultiverseData = function() {
+            localStorage.removeItem('multiverse-clocks');
+            localStorage.removeItem('multiverse-galactic-clocks');
+            console.log('Cleared all multiverse data');
+            testLocalStorage();
+        };
+    </script>
+</body>
+</html>

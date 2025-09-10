@@ -50,6 +50,48 @@ export type Database = {
         }
         Relationships: []
       }
+      planetary_data: {
+        Row: {
+          id: string
+          body: string
+          start_time: string
+          stop_time: string
+          step: string
+          position: Json
+          distance: number | null
+          local_solar_time: string | null
+          julian_date: number | null
+          raw_result: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          body: string
+          start_time: string
+          stop_time: string
+          step: string
+          position: Json
+          distance?: number | null
+          local_solar_time?: string | null
+          julian_date?: number | null
+          raw_result?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          body?: string
+          start_time?: string
+          stop_time?: string
+          step?: string
+          position?: Json
+          distance?: number | null
+          local_solar_time?: string | null
+          julian_date?: number | null
+          raw_result?: Json | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       saved_clocks: {
         Row: {
           created_at: string | null

@@ -2,37 +2,31 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import type { Tables } from '@/integrations/supabase/types';
 
-interface SavedClock {
-  id: string;
-  user_id: string;
-  planet: string;
-  time_format: string;
-  name: string;
-  created_at: string;
-}
+type SavedClock = Tables<'saved_clocks'>;
 
 export function useUserClocks() {
-  const { session } = useAuth();
+  const { user, session } = useAuth();
   const [clocks, setClocks] = useState<SavedClock[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchClocks = async () => {
-    if (!session) return;
+    if (!user) return;
 
     try {
       setLoading(true);
-      const response = await supabase.functions.invoke('user-clocks', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
-      });
+      const { data, error } = await supabase
+        .from('saved_clocks')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-      if (response.error) {
-        throw response.error;
+      if (error) {
+        throw error;
       }
 
-      setClocks(response.data.clocks || []);
+      setClocks(data || []);
     } catch (error: any) {
       console.error('Error fetching clocks:', error);
       toast({
@@ -46,7 +40,7 @@ export function useUserClocks() {
   };
 
   const saveClock = async (planet: string, timeFormat: string = '24h', name?: string) => {
-    if (!session) {
+    if (!user) {
       toast({
         title: "Authentication required",
         description: "Please sign in to save clocks",
@@ -56,25 +50,24 @@ export function useUserClocks() {
     }
 
     try {
-      const response = await supabase.functions.invoke('user-clocks', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        },
-        body: {
+      const { data, error } = await supabase
+        .from('saved_clocks')
+        .insert({
+          user_id: user.id,
           planet,
           time_format: timeFormat,
           name: name || `${planet} Clock`
-        }
-      });
+        })
+        .select()
+        .single();
 
-      if (response.error) {
-        throw response.error;
+      if (error) {
+        throw error;
       }
 
       toast({
         title: "Clock saved",
-        description: `Your ${planet} clock has been saved`,
+        description: `Your ${name || planet} clock has been saved`,
       });
 
       await fetchClocks(); // Refresh the list
@@ -91,19 +84,17 @@ export function useUserClocks() {
   };
 
   const deleteClock = async (clockId: string) => {
-    if (!session) return false;
+    if (!user) return false;
 
     try {
-      const response = await supabase.functions.invoke('user-clocks', {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        },
-        body: { id: clockId }
-      });
+      const { error } = await supabase
+        .from('saved_clocks')
+        .delete()
+        .eq('id', clockId)
+        .eq('user_id', user.id);
 
-      if (response.error) {
-        throw response.error;
+      if (error) {
+        throw error;
       }
 
       toast({
@@ -125,12 +116,12 @@ export function useUserClocks() {
   };
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       fetchClocks();
     } else {
       setClocks([]);
     }
-  }, [session]);
+  }, [user]);
 
   return {
     clocks,

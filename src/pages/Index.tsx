@@ -8,13 +8,31 @@ const Index = () => {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleAuthAction = () => {
+  const handleAuthAction = async () => {
     if (user) {
-      signOut();
+      try {
+        await signOut();
+      } catch (error) {
+        console.error('Sign out action failed:', error);
+        // The sign out function already handles errors internally, 
+        // so this is just an extra safety net
+      }
     } else {
       navigate('/auth');
     }
   };
+
+  // Show loading state while authentication is being determined
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-foreground-secondary font-orbitron">Initializing Multiverse Timekeeper...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
