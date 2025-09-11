@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Globe, MapPin, Save, Trash2, Plus, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { timezoneApi, type TimezoneListItem } from '@/services/api';
 
 export function EarthTime() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -13,6 +14,8 @@ export function EarthTime() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [savedClocks, setSavedClocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [availableTimezones, setAvailableTimezones] = useState<TimezoneListItem[]>([]);
+  const [timezonesLoading, setTimezonesLoading] = useState(true);
   
   const { user } = useAuth();
   
@@ -93,6 +96,23 @@ export function EarthTime() {
     }
   };
   
+  // Load available timezones from API
+  useEffect(() => {
+    const fetchTimezones = async () => {
+      try {
+        setTimezonesLoading(true);
+        const timezones = await timezoneApi.getTimezones();
+        setAvailableTimezones(timezones);
+      } catch (error) {
+        console.error('Failed to load timezones:', error);
+      } finally {
+        setTimezonesLoading(false);
+      }
+    };
+    
+    fetchTimezones();
+  }, []);
+
   // Load saved clocks on component mount and when user changes
   useEffect(() => {
     const loadUserClocks = () => {
@@ -129,34 +149,11 @@ export function EarthTime() {
     }
   }, [savedClocks, user]);
 
-  // Extended list of countries and their timezones
-  const countryTimezones = [
-    { country: 'United States (New York)', timezone: 'America/New_York', flag: '🇺🇸' },
-    { country: 'United States (Los Angeles)', timezone: 'America/Los_Angeles', flag: '🇺🇸' },
-    { country: 'United Kingdom (London)', timezone: 'Europe/London', flag: '🇬🇧' },
-    { country: 'Germany (Berlin)', timezone: 'Europe/Berlin', flag: '🇩🇪' },
-    { country: 'France (Paris)', timezone: 'Europe/Paris', flag: '🇫🇷' },
-    { country: 'Japan (Tokyo)', timezone: 'Asia/Tokyo', flag: '🇯🇵' },
-    { country: 'Australia (Sydney)', timezone: 'Australia/Sydney', flag: '🇦🇺' },
-    { country: 'India (New Delhi)', timezone: 'Asia/Kolkata', flag: '🇮🇳' },
-    { country: 'China (Beijing)', timezone: 'Asia/Shanghai', flag: '🇨🇳' },
-    { country: 'Brazil (São Paulo)', timezone: 'America/Sao_Paulo', flag: '🇧🇷' },
-    { country: 'Russia (Moscow)', timezone: 'Europe/Moscow', flag: '🇷🇺' },
-    { country: 'Canada (Toronto)', timezone: 'America/Toronto', flag: '🇨🇦' },
-    { country: 'South Korea (Seoul)', timezone: 'Asia/Seoul', flag: '🇰🇷' },
-    { country: 'Mexico (Mexico City)', timezone: 'America/Mexico_City', flag: '🇲🇽' },
-    { country: 'Italy (Rome)', timezone: 'Europe/Rome', flag: '🇮🇹' },
-    { country: 'Spain (Madrid)', timezone: 'Europe/Madrid', flag: '🇪🇸' },
-    { country: 'Netherlands (Amsterdam)', timezone: 'Europe/Amsterdam', flag: '🇳🇱' },
-    { country: 'Singapore', timezone: 'Asia/Singapore', flag: '🇸🇬' },
-    { country: 'United Arab Emirates (Dubai)', timezone: 'Asia/Dubai', flag: '🇦🇪' },
-    { country: 'South Africa (Johannesburg)', timezone: 'Africa/Johannesburg', flag: '🇿🇦' },
-    { country: 'Egypt (Cairo)', timezone: 'Africa/Cairo', flag: '🇪🇬' },
-    { country: 'Turkey (Istanbul)', timezone: 'Europe/Istanbul', flag: '🇹🇷' },
-    { country: 'Thailand (Bangkok)', timezone: 'Asia/Bangkok', flag: '🇹🇭' },
-    { country: 'Argentina (Buenos Aires)', timezone: 'America/Argentina/Buenos_Aires', flag: '🇦🇷' },
-    { country: 'Chile (Santiago)', timezone: 'America/Santiago', flag: '🇨🇱' },
-  ];
+  // Get country display name from timezone data
+  const getCountryDisplayName = (tz: TimezoneListItem) => {
+    const cityName = tz.zoneName.split('/').pop()?.replace(/_/g, ' ') || '';
+    return `${tz.countryName} (${cityName})`;
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -194,7 +191,7 @@ export function EarthTime() {
 
   // Helper function to get flag for a timezone
   const getFlagForTimezone = (timezone: string) => {
-    const country = countryTimezones.find(c => c.timezone === timezone);
+    const country = availableTimezones.find(c => c.zoneName === timezone);
     return country ? country.flag : '🌍';
   };
 
@@ -246,9 +243,10 @@ export function EarthTime() {
   const handleSaveCustomClock = async () => {
     if (!selectedCountry || !user) return;
     
-    const country = countryTimezones.find(c => c.timezone === selectedCountry);
-    if (country) {
-      const success = await saveClock(country.timezone, '24h', country.country);
+    const timezoneData = availableTimezones.find(tz => tz.zoneName === selectedCountry);
+    if (timezoneData) {
+      const displayName = getCountryDisplayName(timezoneData);
+      const success = await saveClock(timezoneData.zoneName, '24h', displayName);
       if (success) {
         setIsDialogOpen(false);
         setSelectedCountry('');
@@ -327,14 +325,20 @@ export function EarthTime() {
                     <SelectValue placeholder="Select a country/timezone" />
                   </SelectTrigger>
                   <SelectContent className="hud-panel border-cyan-400/20 max-h-60">
-                    {countryTimezones.map((country) => (
-                      <SelectItem key={country.timezone} value={country.timezone}>
-                        <div className="flex items-center gap-2">
-                          <span>{country.flag}</span>
-                          <span>{country.country}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
+                    {timezonesLoading ? (
+                      <div className="p-4 text-center text-foreground-secondary">
+                        Loading timezones...
+                      </div>
+                    ) : (
+                      availableTimezones.map((tz) => (
+                        <SelectItem key={tz.zoneName} value={tz.zoneName}>
+                          <div className="flex items-center gap-2">
+                            <span>{tz.flag}</span>
+                            <span>{getCountryDisplayName(tz)}</span>
+                          </div>
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
                 

@@ -1,8 +1,10 @@
-﻿import express, { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { getPlanetaryData } from './lib/horizons';
+import { getTimezoneList, getTimezoneInfo, getFlagForCountryCode, type TimezoneListItem, type TimezoneInfo } from './lib/timezonedb';
+import { getCosmicEvents, getEventsByCategory, getCategories, type CosmicEvent } from './lib/eonet';
 
 dotenv.config();
 
@@ -98,6 +100,85 @@ app.post('/api/planetary/fetch', async (req: Request, res: Response) => {
     return res.status(201).json(data);
   } catch (err: any) {
     return res.status(500).json({ error: err.message || 'Unexpected error' });
+  }
+});
+
+// TimeZoneDB API endpoints
+app.get('/api/timezones', async (req: Request, res: Response) => {
+  try {
+    const timezones = await getTimezoneList();
+    
+    // Add flag information to each timezone
+    const timezonesWithFlags = timezones.map((tz: TimezoneListItem) => ({
+      ...tz,
+      flag: getFlagForCountryCode(tz.countryCode)
+    }));
+    
+    return res.json(timezonesWithFlags);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch timezones' });
+  }
+});
+
+app.get('/api/timezone/:zoneName', async (req: Request, res: Response) => {
+  try {
+    const { zoneName } = req.params;
+    if (!zoneName) {
+      return res.status(400).json({ error: 'Zone name is required' });
+    }
+    
+    const timezoneInfo = await getTimezoneInfo(decodeURIComponent(zoneName));
+    
+    if (!timezoneInfo) {
+      return res.status(404).json({ error: 'Timezone not found' });
+    }
+    
+    return res.json({
+      ...timezoneInfo,
+      flag: getFlagForCountryCode(timezoneInfo.countryCode)
+    });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch timezone info' });
+  }
+});
+
+// NASA EONET API endpoints
+app.get('/api/cosmic-events', async (req: Request, res: Response) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+    const days = req.query.days ? parseInt(req.query.days as string) : 365;
+    
+    const events = await getCosmicEvents(limit, days);
+    return res.json(events);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch cosmic events' });
+  }
+});
+
+app.get('/api/cosmic-events/category/:categoryId', async (req: Request, res: Response) => {
+  try {
+    const { categoryId } = req.params;
+    const categoryIdNum = parseInt(categoryId);
+    
+    if (isNaN(categoryIdNum)) {
+      return res.status(400).json({ error: 'Invalid category ID' });
+    }
+    
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+    const events = await getEventsByCategory(categoryIdNum, limit);
+    
+    return res.json(events);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch category events' });
+  }
+});
+
+app.get('/api/cosmic-events/categories', async (req: Request, res: Response) => {
+  try {
+    const categories = await getCategories();
+    return res.json(categories);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch event categories' });
   }
 });
 

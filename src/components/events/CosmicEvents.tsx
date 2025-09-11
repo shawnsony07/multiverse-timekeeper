@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Rocket, Calendar, Clock, Star, Sun, Moon, Zap } from 'lucide-react';
-import { launchApi, type Launch, cosmicEvents, type CosmicEvent } from '@/services/api';
+import { launchApi, type Launch, cosmicEventsApi, type CosmicEvent } from '@/services/api';
 
 export function CosmicEvents() {
   const [launches, setLaunches] = useState<Launch[]>([]);
+  const [cosmicEvents, setCosmicEvents] = useState<CosmicEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
   useEffect(() => {
     const fetchLaunches = async () => {
@@ -21,7 +23,20 @@ export function CosmicEvents() {
       }
     };
 
+    const fetchCosmicEvents = async () => {
+      try {
+        setEventsLoading(true);
+        const events = await cosmicEventsApi.getCosmicEvents(8, 180); // 8 events, 180 days
+        setCosmicEvents(events);
+      } catch (error) {
+        console.error('Failed to fetch cosmic events:', error);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
     fetchLaunches();
+    fetchCosmicEvents();
   }, []);
 
   const getTimeUntilLaunch = (launchTime: string) => {
@@ -60,6 +75,15 @@ export function CosmicEvents() {
       case 'meteor_shower': return Star;
       case 'planetary_alignment': return Sun;
       case 'solar_activity': return Zap;
+      case 'wildfire': return Zap;
+      case 'volcano': return Sun;
+      case 'storm': return Star;
+      case 'earthquake': return Star;
+      case 'flood': return Moon;
+      case 'dust_haze': return Sun;
+      case 'landslide': return Star;
+      case 'drought': return Sun;
+      case 'manmade': return Star;
       default: return Star;
     }
   };
@@ -139,50 +163,69 @@ export function CosmicEvents() {
           COSMIC EVENTS
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {cosmicEvents.map((event) => {
-            const IconComponent = getEventIcon(event.type);
-            const timeUntil = getTimeUntilEvent(event.date);
-            
-            return (
-              <Card key={event.id} className="hud-panel p-4 hover:border-purple-400/50 transition-all duration-300">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <IconComponent className="w-5 h-5 text-purple-400" />
-                    <h3 className="font-orbitron font-bold text-purple-400 text-sm">
-                      {event.name}
-                    </h3>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-xs">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      <span className="font-orbitron font-bold text-purple-400">
-                        {timeUntil}
-                      </span>
+        {eventsLoading ? (
+          <Card className="hud-panel p-6">
+            <div className="text-center text-foreground-secondary">
+              Loading cosmic events...
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {cosmicEvents.map((event) => {
+              const IconComponent = getEventIcon(event.type);
+              const timeUntil = getTimeUntilEvent(event.date);
+              
+              return (
+                <Card key={event.id} className="hud-panel p-4 hover:border-purple-400/50 transition-all duration-300">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <IconComponent className="w-5 h-5 text-purple-400" />
+                      <h3 className="font-orbitron font-bold text-purple-400 text-sm">
+                        {event.name}
+                      </h3>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      <span className="text-muted-foreground">
-                        {new Date(event.date).toLocaleDateString()}
-                      </span>
+                    
+                    <div className="flex items-center gap-4 text-xs">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span className="font-orbitron font-bold text-purple-400">
+                          {timeUntil}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        <span className="text-muted-foreground">
+                          {new Date(event.date).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <p className="text-xs text-foreground-secondary">
-                    {event.description}
-                  </p>
-                  
-                  {event.visibility && (
-                    <p className="text-xs text-yellow-400">
-                      📍 {event.visibility}
+                    
+                    <p className="text-xs text-foreground-secondary">
+                      {event.description}
                     </p>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+                    
+                    <div className="flex items-center justify-between">
+                      {event.visibility && (
+                        <p className="text-xs text-yellow-400">
+                          📍 {event.visibility}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        Source: {event.source}
+                      </p>
+                    </div>
+                    
+                    {event.magnitude && (
+                      <p className="text-xs text-orange-400">
+                        Magnitude: {event.magnitude}
+                      </p>
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Next Major Event Countdown */}
