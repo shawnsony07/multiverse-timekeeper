@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useEffect } from 'react';
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Zap, RotateCcw, Clock, Atom, Sparkles, Plus, Settings, Trash2, Play, Pause } from 'lucide-react';
+import { Zap, RotateCcw, Clock, Atom, Sparkles, Plus, Cog, Trash2, type LucideIcon } from 'lucide-react';
 
 interface AlternateTimeline {
   id: string;
@@ -15,7 +15,7 @@ interface AlternateTimeline {
   timeMultiplier: number;
   scenario: string;
   color: string;
-  icon: any;
+  icon: LucideIcon;
   created?: Date;
   isCustom?: boolean;
   physics?: {
@@ -38,53 +38,21 @@ interface CustomTimelineForm {
 export function WormholeMode() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeTimeline, setActiveTimeline] = useState<string | null>(null);
-  const [customTimelines, setCustomTimelines] = useState<AlternateTimeline[]>([]);
   const [isWormholeActive, setIsWormholeActive] = useState(false);
   const [wormholeIntensity, setWormholeIntensity] = useState(50);
   const [temporalPhase, setTemporalPhase] = useState(0);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newTimeline, setNewTimeline] = useState<CustomTimelineForm>({
-    name: '',
-    description: '',
-    timeMultiplier: 1,
-    scenario: '',
-    gravity: 1,
-    magneticField: 1,
-    quantumFlux: 1
-  });
 
-  // Enhanced time update with temporal phase for animations
+  // Time update
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-      setTemporalPhase(prev => (prev + 1) % 360); // Full rotation every 6 minutes
+      setTemporalPhase(prev => (prev + 1) % 360);
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Load custom timelines from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('customTimelines');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved).map((t: any) => ({
-          ...t,
-          created: new Date(t.created)
-        }));
-        setCustomTimelines(parsed);
-      } catch (error) {
-        console.error('Error loading custom timelines:', error);
-      }
-    }
-  }, []);
-
-  // Save custom timelines to localStorage
-  useEffect(() => {
-    if (customTimelines.length > 0) {
-      localStorage.setItem('customTimelines', JSON.stringify(customTimelines));
-    }
-  }, [customTimelines]);
+  // Simplified component without localStorage
 
   const baseTimelines: AlternateTimeline[] = [
     {
@@ -149,76 +117,44 @@ export function WormholeMode() {
     }
   ];
 
-  // Combine base and custom timelines
-  const allTimelines = [...baseTimelines, ...customTimelines];
+  // Use only base timelines for simplicity
+  const allTimelines = baseTimelines;
 
-  // Custom timeline management functions
-  const createCustomTimeline = () => {
-    if (!newTimeline.name) return;
-    
-    const customTimeline: AlternateTimeline = {
-      id: `custom-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-      name: newTimeline.name,
-      description: newTimeline.description,
-      timeMultiplier: newTimeline.timeMultiplier,
-      scenario: newTimeline.scenario,
-      color: `text-${['green', 'orange', 'indigo', 'teal', 'rose'][Math.floor(Math.random() * 5)]}-400`,
-      icon: Settings,
-      created: new Date(),
-      isCustom: true,
-      physics: {
-        gravity: newTimeline.gravity,
-        magneticField: newTimeline.magneticField,
-        quantumFlux: newTimeline.quantumFlux
-      }
-    };
-    
-    setCustomTimelines(prev => [...prev, customTimeline]);
-    setNewTimeline({
-      name: '',
-      description: '',
-      timeMultiplier: 1,
-      scenario: '',
-      gravity: 1,
-      magneticField: 1,
-      quantumFlux: 1
-    });
-    setShowCreateDialog(false);
-  };
-  
-  const deleteCustomTimeline = (id: string) => {
-    setCustomTimelines(prev => prev.filter(t => t.id !== id));
-    if (activeTimeline === id) {
-      setActiveTimeline(null);
-    }
-  };
+  // Simplified component - custom timeline features removed
 
   // Enhanced time calculation with quantum effects
   const calculateAlternateTime = (multiplier: number, physics?: AlternateTimeline['physics']) => {
-    const now = new Date();
-    let secondsToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    
-    // Apply quantum flux effects
-    if (physics?.quantumFlux && physics.quantumFlux !== 1) {
-      const quantumNoise = Math.sin(temporalPhase * Math.PI / 180) * physics.quantumFlux * 0.1;
-      multiplier += quantumNoise;
+    try {
+      const now = new Date();
+      let secondsToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      
+      // Apply quantum flux effects with safety checks
+      if (physics?.quantumFlux && physics.quantumFlux !== 1 && !isNaN(temporalPhase)) {
+        const quantumNoise = Math.sin(temporalPhase * Math.PI / 180) * physics.quantumFlux * 0.1;
+        if (!isNaN(quantumNoise)) {
+          multiplier += quantumNoise;
+        }
+      }
+      
+      let alternateSeconds;
+      if (multiplier < 0) {
+        // Backwards time calculation
+        alternateSeconds = (86400 - (secondsToday * Math.abs(multiplier))) % 86400;
+      } else {
+        alternateSeconds = (secondsToday * multiplier) % 86400;
+      }
+      
+      if (alternateSeconds < 0) alternateSeconds += 86400;
+      
+      const hours = Math.floor(alternateSeconds / 3600);
+      const minutes = Math.floor((alternateSeconds % 3600) / 60);
+      const seconds = Math.floor(alternateSeconds % 60);
+      
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    } catch (error) {
+      console.error('Error calculating alternate time:', error);
+      return new Date().toLocaleTimeString('en-US', { hour12: false });
     }
-    
-    let alternateSeconds;
-    if (multiplier < 0) {
-      // Backwards time calculation
-      alternateSeconds = (86400 - (secondsToday * Math.abs(multiplier))) % 86400;
-    } else {
-      alternateSeconds = (secondsToday * multiplier) % 86400;
-    }
-    
-    if (alternateSeconds < 0) alternateSeconds += 86400;
-    
-    const hours = Math.floor(alternateSeconds / 3600);
-    const minutes = Math.floor((alternateSeconds % 3600) / 60);
-    const seconds = Math.floor(alternateSeconds % 60);
-    
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
   
   // Animated wormhole travel function
@@ -300,106 +236,11 @@ export function WormholeMode() {
         </Badge>
       </Card>
 
-      {/* Custom Timeline Creation */}
-      <Card className="hud-panel p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-orbitron font-bold text-neon-purple">
-            CUSTOM TIMELINES
-          </h3>
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-            <DialogTrigger asChild>
-              <Button className="bg-neon-purple/20 hover:bg-neon-purple/30 text-neon-purple border-neon-purple">
-                <Plus className="w-4 h-4 mr-2" />
-                CREATE TIMELINE
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="hud-panel max-w-md">
-              <DialogHeader>
-                <DialogTitle className="font-orbitron text-neon-purple">Create Custom Timeline</DialogTitle>
-                <DialogDescription>
-                  Design your own temporal reality with custom physics parameters.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="timeline-name">Timeline Name</Label>
-                  <Input
-                    id="timeline-name"
-                    value={newTimeline.name}
-                    onChange={(e) => setNewTimeline(prev => ({...prev, name: e.target.value}))}
-                    placeholder="e.g. Hyperspeed Earth"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="timeline-desc">Description</Label>
-                  <Input
-                    id="timeline-desc"
-                    value={newTimeline.description}
-                    onChange={(e) => setNewTimeline(prev => ({...prev, description: e.target.value}))}
-                    placeholder="Brief description"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="time-multiplier">Time Multiplier: {newTimeline.timeMultiplier.toFixed(2)}x</Label>
-                  <Slider
-                    id="time-multiplier"
-                    min={0.001}
-                    max={5}
-                    step={0.001}
-                    value={[newTimeline.timeMultiplier]}
-                    onValueChange={(value) => setNewTimeline(prev => ({...prev, timeMultiplier: value[0]}))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="gravity">Gravity Factor: {newTimeline.gravity.toFixed(2)}</Label>
-                  <Slider
-                    id="gravity"
-                    min={-2}
-                    max={3}
-                    step={0.1}
-                    value={[newTimeline.gravity]}
-                    onValueChange={(value) => setNewTimeline(prev => ({...prev, gravity: value[0]}))}
-                  />
-                </div>
-                <Button 
-                  onClick={createCustomTimeline} 
-                  className="w-full bg-neon-purple hover:bg-neon-purple/80"
-                  disabled={!newTimeline.name}
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Create Timeline
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-        {customTimelines.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {customTimelines.map((timeline) => (
-              <div key={timeline.id} className="flex items-center justify-between p-3 bg-surface/30 rounded border border-primary/20">
-                <div>
-                  <p className="font-orbitron font-bold text-sm">{timeline.name}</p>
-                  <p className="text-xs text-foreground-secondary">{timeline.timeMultiplier}x speed</p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => deleteCustomTimeline(timeline.id)}
-                >
-                  <Trash2 className="w-3 h-3" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
-
       {/* Alternate Timelines */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {allTimelines.map((timeline) => {
           const IconComponent = timeline.icon;
           const alternateTime = calculateAlternateTime(timeline.timeMultiplier, timeline.physics);
-          const alternateDate = formatDate(timeline.timeMultiplier);
           const isActive = activeTimeline === timeline.id;
           
           return (
@@ -412,63 +253,26 @@ export function WormholeMode() {
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <IconComponent className={`w-6 h-6 ${timeline.color} animate-glow`} />
                     <h3 className={`text-xl font-orbitron font-bold ${timeline.color}`}>
                       {timeline.name}
                     </h3>
-                    {timeline.isCustom && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteCustomTimeline(timeline.id);
-                        }}
-                        className="ml-2 text-red-400 hover:text-red-300"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge className={`${timeline.color} bg-transparent border-current`}>
-                      {timeline.timeMultiplier}x
-                    </Badge>
-                    {isWormholeActive && activeTimeline === timeline.id && (
-                      <Badge className="bg-neon-purple/20 text-neon-purple animate-pulse">
-                        TRAVELING...
-                      </Badge>
-                    )}
-                  </div>
+                  <Badge className={`${timeline.color} bg-transparent border-current`}>
+                    {timeline.timeMultiplier}x
+                  </Badge>
                 </div>
                 
                 <div className="text-center space-y-2">
-                  <div 
-                    className={`text-3xl font-orbitron font-black ${timeline.color}`}
-                    style={getTimelineEffects(timeline)}
-                  >
+                  <div className={`text-3xl font-orbitron font-black ${timeline.color}`}>
                     {alternateTime}
-                  </div>
-                  <div className="text-sm text-foreground-secondary font-orbitron">
-                    {alternateDate}
                   </div>
                 </div>
                 
                 <p className="text-sm text-foreground-secondary">
                   {timeline.description}
                 </p>
-                
-                {isActive && (
-                  <div className="mt-4 p-4 bg-surface/50 rounded border border-primary/30">
-                    <h4 className="text-sm font-orbitron font-bold text-primary mb-2">
-                      TIMELINE ANALYSIS:
-                    </h4>
-                    <p className="text-xs text-foreground-secondary">
-                      {timeline.scenario}
-                    </p>
-                  </div>
-                )}
               </div>
             </Card>
           );

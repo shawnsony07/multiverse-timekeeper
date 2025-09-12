@@ -124,7 +124,7 @@ const fallbackExoplanets: ExoplanetData[] = [
 export async function getConfirmedExoplanets(limit: number = 50): Promise<ExoplanetData[]> {
   try {
     // NASA Exoplanet Archive TAP query for confirmed planets
-    // Select planets with interesting properties for time calculation
+    // Using the PSCompPars (Planetary Systems Composite Parameters) table
     const query = `
       SELECT 
         pl_name, 
@@ -133,15 +133,12 @@ export async function getConfirmedExoplanets(limit: number = 50): Promise<Exopla
         discoverymethod, 
         pl_orbper, 
         pl_rade, 
-        pl_masse, 
+        pl_bmasse, 
         sy_dist,
-        pl_eqt,
-        pl_orbpererr1,
-        pl_orbpererr2
-      FROM ps 
+        pl_eqt
+      FROM PSCompPars 
       WHERE 
-        default_flag = 1 
-        AND pl_orbper IS NOT NULL 
+        pl_orbper IS NOT NULL 
         AND pl_orbper > 0
         AND sy_dist IS NOT NULL
         AND disc_year >= 2015
@@ -173,7 +170,7 @@ export async function getConfirmedExoplanets(limit: number = 50): Promise<Exopla
       const hostStar = planet.hostname || 'Unknown Star';
       const orbitalPeriod = parseFloat(planet.pl_orbper) || 365;
       const planetRadius = planet.pl_rade ? parseFloat(planet.pl_rade) : undefined;
-      const planetMass = planet.pl_masse ? parseFloat(planet.pl_masse) : undefined;
+      const planetMass = planet.pl_bmasse ? parseFloat(planet.pl_bmasse) : undefined;
       const distanceFromEarth = parseFloat(planet.sy_dist) || 100;
       const temperature = planet.pl_eqt ? parseFloat(planet.pl_eqt) : undefined;
       const discoveryYear = parseInt(planet.disc_year) || new Date().getFullYear();
@@ -226,13 +223,12 @@ export async function searchExoplanetsByName(searchTerm: string, limit: number =
         discoverymethod, 
         pl_orbper, 
         pl_rade, 
-        pl_masse, 
+        pl_bmasse, 
         sy_dist,
         pl_eqt
-      FROM ps 
+      FROM PSCompPars 
       WHERE 
-        default_flag = 1 
-        AND (LOWER(pl_name) LIKE '%${searchTerm.toLowerCase()}%' OR LOWER(hostname) LIKE '%${searchTerm.toLowerCase()}%')
+        (LOWER(pl_name) LIKE '%${searchTerm.toLowerCase()}%' OR LOWER(hostname) LIKE '%${searchTerm.toLowerCase()}%')
         AND pl_orbper IS NOT NULL 
       ORDER BY disc_year DESC 
       LIMIT ${limit}
@@ -344,9 +340,9 @@ export async function getExoplanetStats(): Promise<{
   try {
     // Query for basic statistics
     const queries = [
-      'SELECT COUNT(*) as total FROM ps WHERE default_flag = 1',
-      'SELECT COUNT(*) as recent FROM ps WHERE default_flag = 1 AND disc_year >= 2023',
-      'SELECT COUNT(*) as habitable FROM ps WHERE default_flag = 1 AND pl_eqt BETWEEN 200 AND 350'
+      'SELECT COUNT(*) as total FROM PSCompPars WHERE pl_name IS NOT NULL',
+      'SELECT COUNT(*) as recent FROM PSCompPars WHERE pl_name IS NOT NULL AND disc_year >= 2023',
+      'SELECT COUNT(*) as habitable FROM PSCompPars WHERE pl_name IS NOT NULL AND pl_eqt BETWEEN 200 AND 350'
     ];
 
     const results = await Promise.all(queries.map(async (query) => {

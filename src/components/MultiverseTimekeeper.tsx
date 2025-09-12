@@ -82,10 +82,13 @@ export function MultiverseTimekeeper() {
     if (activeTab === 'wormhole') {
       return "/lovable-uploads/wormhole.gif";
     }
+    if (activeTab === 'tracking') {
+      return "/lovable-uploads/iss.gif"; // ISS tracking background
+    }
     if (activeTab === 'lore') {
       return "/lovable-uploads/infinity.gif"; // AI lore uses infinity background
     }
-    // events and tracking (default) 
+    // events (default) 
     return "/lovable-uploads/infinity.gif";
   }, [activeTab]);
 
