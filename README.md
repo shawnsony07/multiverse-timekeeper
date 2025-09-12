@@ -85,13 +85,24 @@ Create a `.env` file with these optional API keys for enhanced features:
 
 ```env
 # TimeZoneDB API (for real-time timezone data)
-TIMEZONEDB_API_KEY=your_api_key_here
+# Get free API key from: https://timezonedb.com/api
+TIMEZONEDB_API_KEY=your_timezonedb_api_key_here
 
-# Supabase (for user authentication)
+# N2YO Satellite Tracking API (for ISS tracking)
+# Get free API key from: https://www.n2yo.com/api/
+N2YO_API_KEY=your_n2yo_api_key_here
+
+# NASA APIs (optional, DEMO_KEY works with rate limits)
+# Get free API key from: https://api.nasa.gov/
+NASA_API_KEY=your_nasa_api_key_here
+
+# Supabase (for user authentication and database)
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-# NASA APIs are public and require no keys
+# NASA, NOAA, and Launch Library APIs are public and require no keys
+# All APIs include fallback data when keys are not provided
 ```
 
 ## 🛠️ Technology Stack
@@ -147,9 +158,11 @@ multiverse-timekeeper/
 ## 🌟 Key Features Deep Dive
 
 ### Astronomical Accuracy
-- Real planetary rotation periods and orbital data
-- Accurate time zone calculations with DST handling
-- Live cosmic event tracking from NASA
+- **17 integrated APIs** for real-time space data
+- Real planetary rotation periods and orbital data from NASA JPL Horizons
+- Live cosmic event tracking from NASA EONET
+- Accurate timezone calculations with DST handling from TimeZoneDB
+- Real-time ISS tracking via N2YO satellite API
 
 ### User Experience
 - Responsive design for all device sizes
@@ -183,17 +196,150 @@ npm run type-check         # Run TypeScript checks
 
 ## 🌐 API Documentation
 
-The project includes a comprehensive backend API:
+The project integrates **17 external APIs** plus custom backend endpoints for comprehensive space and Earth data.
 
-### Timezone Endpoints
-- `GET /api/timezones` - List available timezones
-- `GET /api/timezone/:zoneName` - Get specific timezone data
+### 🚀 NASA APIs (Public - No Keys Required)
 
-### Cosmic Events
-- `GET /api/cosmic-events` - Get recent cosmic events
-- `GET /api/cosmic-events/category/:id` - Filter by event type
+#### NASA JPL Horizons API
+- **URL**: `https://ssd.jpl.nasa.gov/api/horizons.api`
+- **Purpose**: Real-time planetary positions and orbital mechanics
+- **Data**: Earth, Mars, Moon positions, distances, local solar time
 
-*Full API documentation available in [API_INTEGRATION.md](./API_INTEGRATION.md)*
+#### NASA EONET API
+- **URL**: `https://eonet.gsfc.nasa.gov/api/v3`
+- **Purpose**: Earth Observatory Natural Event Tracker
+- **Data**: Live natural events (wildfires, earthquakes, volcanoes, storms)
+
+#### NASA Exoplanet Archive API
+- **URL**: `https://exoplanetarchive.ipac.caltech.edu/TAP/sync`
+- **Purpose**: Confirmed exoplanet database
+- **Data**: TAP queries for exoplanet characteristics and discovery data
+
+#### NASA NeoWs API
+- **URL**: `https://api.nasa.gov/neo/rest/v1`
+- **Purpose**: Near Earth Object Web Service
+- **Data**: Asteroid tracking, close approaches, orbital data
+
+### 🌦️ NOAA Space Weather APIs (Public)
+
+#### NOAA SWPC Alerts
+- **URL**: `https://services.swpc.noaa.gov/products/alerts.json`
+- **Data**: Space weather alerts and warnings
+
+#### NOAA Planetary K-Index
+- **URL**: `https://services.swpc.noaa.gov/json/planetary_k_index_1m.json`
+- **Data**: Geomagnetic activity indices
+
+#### NOAA Solar Wind
+- **URL**: `https://services.swpc.noaa.gov/json/ace_swepam_1m.json`
+- **Data**: Solar wind speed and magnetic field measurements
+
+#### NOAA X-Ray Flux
+- **URL**: `https://services.swpc.noaa.gov/json/goes_xray_flux_1m.json`
+- **Data**: Solar flare X-ray measurements
+
+#### NOAA Aurora Forecast
+- **URL**: `https://services.swpc.noaa.gov/json/aurora_forecast_northern_hemisphere.json`
+- **Data**: Northern hemisphere aurora visibility predictions
+
+### 🔑 Third-Party APIs (Require Keys)
+
+#### TimeZoneDB API
+- **URL**: `http://api.timezonedb.com/v2.1`
+- **Key**: `TIMEZONEDB_API_KEY`
+- **Data**: Real-time timezone data, GMT offsets, DST information
+- **Fallback**: Uses hardcoded timezone data when API unavailable
+
+#### N2YO Satellite Tracking API
+- **URL**: `https://api.n2yo.com/rest/v1/satellite`
+- **Key**: `N2YO_API_KEY`
+- **Data**: ISS position, satellite passes, orbital predictions
+- **Fallback**: Simulated ISS orbital movement when API unavailable
+
+### 🚀 Space Industry APIs (Public)
+
+#### Launch Library API
+- **URL**: `https://lldev.thespacedevs.com/2.3.0/launches/`
+- **Data**: Rocket launch schedules, mission information, launch providers
+
+### 🗄️ Database & Authentication APIs
+
+#### Supabase
+- **URL**: `https://zjozesrdjwoeiyidbzop.supabase.co`
+- **Keys**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- **Services**: User authentication, data storage, real-time subscriptions
+
+### ⚡ Custom Backend API Endpoints
+
+The Express.js server provides 30+ endpoints that aggregate external APIs:
+
+#### Planetary Data
+- `GET /api/planetary/:body` - Cached planetary position data
+- `POST /api/planetary/fetch` - Refresh data from NASA Horizons
+
+#### Timezone Management
+- `GET /api/timezones` - List timezones with country flags
+- `GET /api/timezone/:zoneName` - Detailed timezone information
+
+#### Cosmic Events
+- `GET /api/cosmic-events` - NASA EONET natural events
+- `GET /api/cosmic-events/category/:categoryId` - Events by category
+- `GET /api/cosmic-events/categories` - Available event categories
+
+#### Exoplanet Data
+- `GET /api/exoplanets` - Confirmed exoplanets from NASA
+- `GET /api/exoplanets/search` - Search exoplanets by name
+- `GET /api/exoplanets/stats` - Exoplanet discovery statistics
+
+#### Satellite Tracking
+- `GET /api/satellites/iss` - Current ISS position
+- `GET /api/satellites/iss/passes` - ISS pass predictions for location
+- `GET /api/satellites/info/:noradId` - Satellite orbital information
+- `GET /api/satellites/popular` - Popular satellites by category
+- `GET /api/satellites/iss/relative` - ISS position relative to user
+
+#### Space Weather
+- `GET /api/space-weather/alerts` - Current space weather alerts
+- `GET /api/space-weather/solar-activity` - Solar activity indices
+- `GET /api/space-weather/aurora-forecast` - Aurora visibility forecast
+
+#### Asteroid Tracking
+- `GET /api/asteroids/today` - Today's near-Earth asteroids
+- `GET /api/asteroids/range` - Asteroids by date range
+- `GET /api/asteroids/:id` - Specific asteroid details
+- `GET /api/asteroids/stats` - Asteroid database statistics
+- `GET /api/asteroids/hazardous` - Potentially hazardous asteroids
+
+#### AI Lore Generation
+- `POST /api/lore/generate` - Generate cosmic civilization stories
+- `POST /api/lore/generate-set` - Generate complete planet lore sets
+- `POST /api/lore/recommendations` - Get recommended lore content
+
+#### System Monitoring
+- `POST /api/batch/update-exoplanets` - Update exoplanet database
+- `GET /api/batch/notifications` - Recent system notifications
+- `GET /api/batch/history` - Batch update history
+- `GET /api/batch/health` - System health status
+- `GET /api/batch/freshness` - Data freshness indicators
+
+### 🔧 Supabase Edge Functions
+
+#### Custom Database Functions
+- **get-events** - Advanced event filtering and statistics
+- **sync-events** - Automated synchronization with external APIs
+- **user-clocks** - User clock preferences management
+- **planetary-time** - Complex planetary time calculations
+
+### 📊 API Integration Summary
+- **Total APIs**: 17 external + 30+ internal endpoints
+- **Free APIs**: 10 (NASA, NOAA, Launch Library)
+- **Paid APIs**: 2 (TimeZoneDB, N2YO) with free tiers
+- **Database**: 1 (Supabase)
+- **Fallback Systems**: All APIs include offline fallback data
+- **Rate Limiting**: Server-side caching reduces API calls
+- **Error Handling**: Comprehensive error handling and logging
+
+*Complete API integration details in [API_INTEGRATION.md](./API_INTEGRATION.md)*
 
 ## 🌍 Supported Locations
 
