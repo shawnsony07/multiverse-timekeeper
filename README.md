@@ -401,5 +401,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 *"In the vastness of space and the immensity of time, it is my joy to share this moment with you."*
-
-⭐ **Star this repository** if you find it useful!
