@@ -111,10 +111,13 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 - **Real-time API integrations**
 
 ### APIs & Services
+- **17 External APIs** - Comprehensive space and Earth data
+- **NASA APIs** - Planetary data, exoplanets, asteroids, natural events
+- **NOAA APIs** - Space weather, solar activity, aurora forecasts
 - **TimeZoneDB API** - Real-time timezone data
-- **NASA EONET API** - Live Earth observation events
-- **ISS Location API** - Real-time space station tracking
-- **Supabase** - Authentication and user data
+- **N2YO API** - Satellite tracking and ISS data
+- **Launch Library API** - Rocket launch schedules
+- **Supabase** - Authentication, database, and edge functions
 
 ### Database
 - **Supabase PostgreSQL** - User accounts and preferences
