@@ -5,6 +5,12 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { getPlanetaryData } from './lib/horizons';
 import { getTimezoneList, getTimezoneInfo, getFlagForCountryCode, type TimezoneListItem, type TimezoneInfo } from './lib/timezonedb';
 import { getCosmicEvents, getEventsByCategory, getCategories, type CosmicEvent } from './lib/eonet';
+import { getConfirmedExoplanets, searchExoplanetsByName, getExoplanetStats, type ExoplanetData } from './lib/exoplanets';
+import { getISSPosition, getISSSPassPredictions, getSatelliteInfo, getPopularSatellites, getISSRelativeToUser, type SatellitePosition, type SatellitePass, type SatelliteInfo } from './lib/satellites';
+import { getCurrentSpaceWeatherAlerts, getCurrentSolarActivity, getAuroraForecast, type SpaceWeatherAlert, type SolarActivity, type AuroraForecast } from './lib/spaceweather';
+import { getTodaysAsteroids, getAsteroidsByDateRange, getAsteroidById, getAsteroidStats, getPotentiallyHazardousAsteroids, type AsteroidData, type AsteroidStats } from './lib/asteroids';
+import { updateExoplanetDatabase, runScheduledUpdate, getRecentNotifications, getBatchUpdateHistory, getBatchSystemHealth, checkDataFreshness, type BatchUpdateResult, type ExoplanetUpdateNotification } from './lib/batch-updates';
+import { generateCosmicLore, generatePlanetLoreSet, getRecommendedLore, type CosmicLore, type LoreGenerationRequest } from './lib/cosmic-lore';
 
 dotenv.config();
 
@@ -179,6 +185,308 @@ app.get('/api/cosmic-events/categories', async (req: Request, res: Response) => 
     return res.json(categories);
   } catch (err: any) {
     return res.status(500).json({ error: err.message || 'Failed to fetch event categories' });
+  }
+});
+
+// NASA Exoplanet Archive API endpoints
+app.get('/api/exoplanets', async (req: Request, res: Response) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+    
+    const exoplanets = await getConfirmedExoplanets(limit);
+    return res.json(exoplanets);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch exoplanets' });
+  }
+});
+
+app.get('/api/exoplanets/search', async (req: Request, res: Response) => {
+  try {
+    const searchTerm = req.query.q as string;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    
+    if (!searchTerm) {
+      return res.status(400).json({ error: 'Search term (q) is required' });
+    }
+    
+    const results = await searchExoplanetsByName(searchTerm, limit);
+    return res.json(results);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to search exoplanets' });
+  }
+});
+
+app.get('/api/exoplanets/stats', async (req: Request, res: Response) => {
+  try {
+    const stats = await getExoplanetStats();
+    return res.json(stats);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch exoplanet statistics' });
+  }
+});
+
+// Satellite tracking API endpoints
+app.get('/api/satellites/iss', async (_req: Request, res: Response) => {
+  try {
+    const issPosition = await getISSPosition();
+    return res.json(issPosition);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch ISS position' });
+  }
+});
+
+app.get('/api/satellites/iss/passes', async (req: Request, res: Response) => {
+  try {
+    const latitude = req.query.lat ? parseFloat(req.query.lat as string) : null;
+    const longitude = req.query.lng ? parseFloat(req.query.lng as string) : null;
+    const altitude = req.query.alt ? parseFloat(req.query.alt as string) : 0;
+    const days = req.query.days ? parseInt(req.query.days as string) : 10;
+    
+    if (latitude === null || longitude === null || isNaN(latitude) || isNaN(longitude)) {
+      return res.status(400).json({ error: 'Valid latitude and longitude are required' });
+    }
+    
+    const passes = await getISSSPassPredictions(latitude, longitude, altitude, days);
+    return res.json(passes);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch ISS pass predictions' });
+  }
+});
+
+app.get('/api/satellites/info/:noradId', async (req: Request, res: Response) => {
+  try {
+    const noradId = parseInt(req.params.noradId);
+    
+    if (isNaN(noradId)) {
+      return res.status(400).json({ error: 'Valid NORAD ID is required' });
+    }
+    
+    const satelliteInfo = await getSatelliteInfo(noradId);
+    return res.json(satelliteInfo);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch satellite information' });
+  }
+});
+
+app.get('/api/satellites/popular', async (req: Request, res: Response) => {
+  try {
+    const category = req.query.category as string || 'stations';
+    const satellites = await getPopularSatellites(category);
+    return res.json(satellites);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch popular satellites' });
+  }
+});
+
+app.get('/api/satellites/iss/relative', async (req: Request, res: Response) => {
+  try {
+    const latitude = req.query.lat ? parseFloat(req.query.lat as string) : null;
+    const longitude = req.query.lng ? parseFloat(req.query.lng as string) : null;
+    
+    if (latitude === null || longitude === null || isNaN(latitude) || isNaN(longitude)) {
+      return res.status(400).json({ error: 'Valid latitude and longitude are required' });
+    }
+    
+    const relativeInfo = await getISSRelativeToUser(latitude, longitude);
+    return res.json(relativeInfo);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to calculate relative ISS position' });
+  }
+});
+
+// Space weather API endpoints
+app.get('/api/space-weather/alerts', async (_req: Request, res: Response) => {
+  try {
+    const alerts = await getCurrentSpaceWeatherAlerts();
+    return res.json(alerts);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch space weather alerts' });
+  }
+});
+
+app.get('/api/space-weather/solar-activity', async (_req: Request, res: Response) => {
+  try {
+    const solarActivity = await getCurrentSolarActivity();
+    return res.json(solarActivity);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch solar activity data' });
+  }
+});
+
+app.get('/api/space-weather/aurora-forecast', async (_req: Request, res: Response) => {
+  try {
+    const auroraForecast = await getAuroraForecast();
+    return res.json(auroraForecast);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch aurora forecast' });
+  }
+});
+
+// Asteroid tracking API endpoints
+app.get('/api/asteroids/today', async (_req: Request, res: Response) => {
+  try {
+    const asteroids = await getTodaysAsteroids();
+    return res.json(asteroids);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch today\'s asteroids' });
+  }
+});
+
+app.get('/api/asteroids/range', async (req: Request, res: Response) => {
+  try {
+    const startDate = req.query.start as string;
+    const endDate = req.query.end as string;
+    
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Start date and end date are required' });
+    }
+    
+    const asteroids = await getAsteroidsByDateRange(startDate, endDate);
+    return res.json(asteroids);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch asteroids by date range' });
+  }
+});
+
+app.get('/api/asteroids/:id', async (req: Request, res: Response) => {
+  try {
+    const asteroidId = req.params.id;
+    if (!asteroidId) {
+      return res.status(400).json({ error: 'Asteroid ID is required' });
+    }
+    
+    const asteroid = await getAsteroidById(asteroidId);
+    if (!asteroid) {
+      return res.status(404).json({ error: 'Asteroid not found' });
+    }
+    
+    return res.json(asteroid);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch asteroid details' });
+  }
+});
+
+app.get('/api/asteroids/stats', async (_req: Request, res: Response) => {
+  try {
+    const stats = await getAsteroidStats();
+    return res.json(stats);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch asteroid statistics' });
+  }
+});
+
+app.get('/api/asteroids/hazardous', async (req: Request, res: Response) => {
+  try {
+    const page = req.query.page ? parseInt(req.query.page as string) : 0;
+    const size = req.query.size ? parseInt(req.query.size as string) : 20;
+    
+    const result = await getPotentiallyHazardousAsteroids(page, size);
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch potentially hazardous asteroids' });
+  }
+});
+
+// Batch update and monitoring API endpoints
+app.post('/api/batch/update-exoplanets', async (_req: Request, res: Response) => {
+  try {
+    const result = await updateExoplanetDatabase();
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to update exoplanet database' });
+  }
+});
+
+app.post('/api/batch/run-scheduled', async (_req: Request, res: Response) => {
+  try {
+    await runScheduledUpdate();
+    return res.json({ success: true, message: 'Scheduled update completed' });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to run scheduled update' });
+  }
+});
+
+app.get('/api/batch/notifications', async (req: Request, res: Response) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const notifications = await getRecentNotifications(limit);
+    return res.json(notifications);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch notifications' });
+  }
+});
+
+app.get('/api/batch/history', async (req: Request, res: Response) => {
+  try {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+    const history = await getBatchUpdateHistory(limit);
+    return res.json(history);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch batch update history' });
+  }
+});
+
+app.get('/api/batch/health', async (_req: Request, res: Response) => {
+  try {
+    const health = await getBatchSystemHealth();
+    return res.json(health);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to check batch system health' });
+  }
+});
+
+app.get('/api/batch/freshness', async (_req: Request, res: Response) => {
+  try {
+    const freshness = await checkDataFreshness();
+    return res.json(freshness);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to check data freshness' });
+  }
+});
+
+// Cosmic lore generator API endpoints
+app.post('/api/lore/generate', async (req: Request, res: Response) => {
+  try {
+    const request: LoreGenerationRequest = req.body;
+    
+    if (!request.planetData?.name) {
+      return res.status(400).json({ error: 'Planet data with name is required' });
+    }
+    
+    const lore = generateCosmicLore(request);
+    return res.json(lore);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to generate cosmic lore' });
+  }
+});
+
+app.post('/api/lore/generate-set', async (req: Request, res: Response) => {
+  try {
+    const { planetData } = req.body;
+    
+    if (!planetData?.name) {
+      return res.status(400).json({ error: 'Planet data with name is required' });
+    }
+    
+    const loreSet = generatePlanetLoreSet(planetData);
+    return res.json(loreSet);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to generate planet lore set' });
+  }
+});
+
+app.post('/api/lore/recommendations', async (req: Request, res: Response) => {
+  try {
+    const { planetData } = req.body;
+    
+    if (!planetData?.name) {
+      return res.status(400).json({ error: 'Planet data with name is required' });
+    }
+    
+    const recommendations = getRecommendedLore(planetData);
+    return res.json(recommendations);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Failed to get lore recommendations' });
   }
 });
 

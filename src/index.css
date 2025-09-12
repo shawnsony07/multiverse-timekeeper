@@ -173,6 +173,15 @@
     50% { opacity: 0.8; }
   }
   
+  @keyframes cosmic-pulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px hsl(var(--neon-purple) / 0.5), 0 0 10px hsl(var(--neon-purple) / 0.3), 0 0 15px hsl(var(--neon-purple) / 0.2);
+    }
+    50% { 
+      box-shadow: 0 0 20px hsl(var(--neon-purple) / 0.8), 0 0 30px hsl(var(--neon-purple) / 0.6), 0 0 40px hsl(var(--neon-purple) / 0.4);
+    }
+  }
+  
   /* Utility Classes */
   .bg-cosmic-gradient { background: var(--gradient-cosmic); }
   .bg-cyber-gradient { background: var(--gradient-cyber); }
@@ -184,6 +193,23 @@
   .text-neon-gold { @apply text-[hsl(var(--neon-gold))]; }
   .text-neon-red { @apply text-[hsl(var(--neon-red))]; }
   .text-neon-green { @apply text-[hsl(var(--neon-green))]; }
+  
+  /* Animation utility classes */
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  .animate-pulse-cosmic {
+    animation: pulse-cosmic 2s ease-in-out infinite;
+  }
+  
+  .animate-cosmic-pulse {
+    animation: cosmic-pulse 2s ease-in-out infinite;
+  }
+  
+  .cosmic-pulse:hover {
+    animation: cosmic-pulse 0.5s ease-in-out;
+  }
   
   /* Sliding Cape Animation */
   @keyframes floating {

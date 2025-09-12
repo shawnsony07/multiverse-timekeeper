@@ -46,11 +46,29 @@ async function testAPIs() {
 
     console.log('🎉 All API integrations are working successfully!\n');
     
+    // Test 6: NASA Exoplanet Archive - Get exoplanets
+    console.log('6. NASA Exoplanet Archive - Get exoplanets...');
+    const exoplanets = await axios.get(`${SERVER_URL}/api/exoplanets?limit=5`);
+    console.log(`✅ Loaded ${exoplanets.data.length} exoplanets`);
+    if (exoplanets.data.length > 0) {
+      console.log('Sample exoplanet:', exoplanets.data[0]);
+    }
+    console.log();
+
+    // Test 7: NASA Exoplanet Archive - Get statistics
+    console.log('7. NASA Exoplanet Archive - Get statistics...');
+    const exoplanetStats = await axios.get(`${SERVER_URL}/api/exoplanets/stats`);
+    console.log('✅ Exoplanet statistics:', exoplanetStats.data);
+    console.log();
+
+    console.log('🎉 All API integrations are working successfully!\n');
+    
     console.log('📊 Integration Status:');
     console.log('✅ NASA JPL Horizons API - Planetary data (existing)');
     console.log('✅ Launch Library API 2.0 - Rocket launches (existing)');
     console.log('✅ TimeZoneDB API - Earth timezones (NEW)');
     console.log('✅ NASA EONET API - Natural events (NEW)');
+    console.log('✅ NASA Exoplanet Archive API - Confirmed exoplanets (NEW)');
     
   } catch (error) {
     console.error('❌ API test failed:', error.message);

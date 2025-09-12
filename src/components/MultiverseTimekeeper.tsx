@@ -1,10 +1,13 @@
 import { useState, useEffect, useMemo, Component, ReactNode } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, Rocket, Zap, Globe, AlertTriangle } from 'lucide-react';
+import { Clock, Rocket, Zap, Globe, AlertTriangle, Satellite, BookOpen } from 'lucide-react';
 import { EarthTime } from '@/components/time/EarthTime';
 import { GalacticTime } from '@/components/time/GalacticTime';
 import { CosmicEvents } from '@/components/events/CosmicEvents';
 import { WormholeMode } from '@/components/wormhole/WormholeMode';
+import { CosmicLoreGenerator } from '@/components/lore/CosmicLoreGenerator';
+import { ISSTracker } from '@/components/tracking/ISSTracker';
+import { CosmicAudioSystem } from '@/components/audio/CosmicAudioSystem';
 
 // Error Boundary Component
 interface ErrorBoundaryProps {
@@ -68,7 +71,7 @@ export function MultiverseTimekeeper() {
   const [error, setError] = useState<string | null>(null);
   const CAPE_WIDTH_PX = 192; // aligns with w-48 (12rem * 16)
 
-  // Choose background per tab (NOW & EVENTS share same)
+  // Choose background per tab
   const backgroundUrl = useMemo(() => {
     if (activeTab === 'now') {
       return "/lovable-uploads/india1.gif";
@@ -79,7 +82,10 @@ export function MultiverseTimekeeper() {
     if (activeTab === 'wormhole') {
       return "/lovable-uploads/wormhole.gif";
     }
-    // events (default) 
+    if (activeTab === 'lore') {
+      return "/lovable-uploads/infinity.gif"; // AI lore uses infinity background
+    }
+    // events and tracking (default) 
     return "/lovable-uploads/infinity.gif";
   }, [activeTab]);
 
@@ -242,7 +248,7 @@ export function MultiverseTimekeeper() {
         <div className="max-w-6xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Cosmic Tab Navigation */}
-            <TabsList className="grid w-full grid-cols-4 hud-panel mb-8 p-2">
+            <TabsList className="grid w-full grid-cols-6 hud-panel mb-8 p-2">
               <TabsTrigger 
                 value="now" 
                 className="flex items-center gap-2 font-orbitron font-bold data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400 text-foreground-secondary hover:text-cyan-400 transition-all"
@@ -265,11 +271,25 @@ export function MultiverseTimekeeper() {
                 EVENTS
               </TabsTrigger>
               <TabsTrigger 
+                value="tracking"
+                className="flex items-center gap-2 font-orbitron font-bold data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400 text-foreground-secondary hover:text-cyan-400 transition-all"
+              >
+                <Satellite className="w-5 h-5" />
+                TRACKING
+              </TabsTrigger>
+              <TabsTrigger 
                 value="wormhole"
                 className="flex items-center gap-2 font-orbitron font-bold data-[state=active]:bg-pink-500/20 data-[state=active]:text-pink-400 text-foreground-secondary hover:text-pink-400 transition-all"
               >
                 <Zap className="w-5 h-5" />
                 WORMHOLE
+              </TabsTrigger>
+              <TabsTrigger 
+                value="lore"
+                className="flex items-center gap-2 font-orbitron font-bold data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 text-foreground-secondary hover:text-purple-400 transition-all"
+              >
+                <BookOpen className="w-5 h-5" />
+                AI LORE
               </TabsTrigger>
             </TabsList>
 
@@ -292,12 +312,29 @@ export function MultiverseTimekeeper() {
               </ErrorBoundary>
             </TabsContent>
 
+            <TabsContent value="tracking" className="space-y-6">
+              <ErrorBoundary fallback={<ComponentError name="ISSTracker" />}>
+                <ISSTracker />
+              </ErrorBoundary>
+            </TabsContent>
+
             <TabsContent value="wormhole" className="space-y-6 wormhole-bg p-6 rounded-lg">
               <ErrorBoundary fallback={<ComponentError name="WormholeMode" />}>
                 <WormholeMode />
               </ErrorBoundary>
             </TabsContent>
+
+            <TabsContent value="lore" className="space-y-6">
+              <ErrorBoundary fallback={<ComponentError name="CosmicLoreGenerator" />}>
+                <CosmicLoreGenerator />
+              </ErrorBoundary>
+            </TabsContent>
           </Tabs>
+        </div>
+
+        {/* Audio System */}
+        <div className="mt-8">
+          <CosmicAudioSystem activeTab={activeTab} className="max-w-2xl mx-auto" />
         </div>
 
         {/* Status Bar */}

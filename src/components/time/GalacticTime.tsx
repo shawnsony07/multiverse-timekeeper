@@ -3,8 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Globe, Orbit, Stars, Plus, Save, Trash2, Rocket, Moon, Sun } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Globe, Orbit, Stars, Plus, Save, Trash2, Rocket, Moon, Sun, Telescope } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { exoplanetApi, type ExoplanetData } from '@/services/api';
 
 export function GalacticTime() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -12,6 +14,9 @@ export function GalacticTime() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [savedClocks, setSavedClocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [exoplanets, setExoplanets] = useState<ExoplanetData[]>([]);
+  const [exoplanetsLoading, setExoplanetsLoading] = useState(true);
+  const [exoplanetStats, setExoplanetStats] = useState<any>(null);
   const { user } = useAuth();
   
   // Simple save/delete functions that use local storage as fallback
@@ -90,6 +95,27 @@ export function GalacticTime() {
     }
   };
   
+  // Load exoplanet data from NASA Exoplanet Archive API
+  useEffect(() => {
+    const fetchExoplanets = async () => {
+      try {
+        setExoplanetsLoading(true);
+        const [exoplanetData, stats] = await Promise.all([
+          exoplanetApi.getExoplanets(15), // Get top 15 exoplanets
+          exoplanetApi.getStats()
+        ]);
+        setExoplanets(exoplanetData);
+        setExoplanetStats(stats);
+      } catch (error) {
+        console.error('Failed to load exoplanet data:', error);
+      } finally {
+        setExoplanetsLoading(false);
+      }
+    };
+    
+    fetchExoplanets();
+  }, []);
+
   // Load saved clocks on component mount and when user changes
   useEffect(() => {
     const loadUserClocks = () => {
@@ -123,7 +149,25 @@ export function GalacticTime() {
     return () => clearInterval(interval);
   }, []);
 
-  // Comprehensive galactic locations database
+  // Convert real exoplanet data to galactic location format
+  const exoplanetsAsGalacticLocations = exoplanets.map(exoplanet => ({
+    id: exoplanet.id,
+    name: exoplanet.name,
+    category: 'Exoplanet',
+    dayLength: exoplanet.estimatedDayLength || 24, // hours
+    yearLength: exoplanet.orbitalPeriod, // Earth days
+    description: exoplanet.description,
+    icon: exoplanet.icon,
+    color: exoplanet.color,
+    type: 'real' as const,
+    hostStar: exoplanet.hostStar,
+    distanceFromEarth: exoplanet.distanceFromEarth,
+    habitableZone: exoplanet.habitableZone,
+    discoveryYear: exoplanet.discoveryYear,
+    temperature: exoplanet.temperature
+  }));
+
+  // Comprehensive galactic locations database (hardcoded + real exoplanets)
   const galacticLocations = [
     // Solar System Planets
     {
@@ -381,7 +425,7 @@ export function GalacticTime() {
       type: 'fictional',
       universe: 'Avatar'
     }
-  ];
+  ].concat(exoplanetsAsGalacticLocations); // Merge with real exoplanet data
 
   // Universal galactic time calculator
   const calculateGalacticTime = (location: any, earthTime: Date) => {
@@ -656,6 +700,26 @@ export function GalacticTime() {
                   {location.universe && (
                     <div className="text-yellow-400 mt-1">{location.universe}</div>
                   )}
+                  {/* Additional exoplanet data */}
+                  {location.category === 'Exoplanet' && (
+                    <div className="mt-2 space-y-1">
+                      {location.hostStar && (
+                        <div className="text-orange-400">⭐ {location.hostStar}</div>
+                      )}
+                      {location.distanceFromEarth && (
+                        <div className="text-cyan-400">📏 {location.distanceFromEarth.toFixed(1)} ly away</div>
+                      )}
+                      {location.habitableZone && (
+                        <div className="text-green-400">🌱 Potentially Habitable</div>
+                      )}
+                      {location.discoveryYear && (
+                        <div className="text-blue-400">🔭 Discovered {location.discoveryYear}</div>
+                      )}
+                      {location.temperature && (
+                        <div className="text-red-400">🌡️ {location.temperature}K</div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 
                 {/* Time Info */}
@@ -707,6 +771,54 @@ export function GalacticTime() {
           );
         })}
       </div>
+
+      {/* NASA Exoplanet Discovery Statistics */}
+      {exoplanetStats && (
+        <Card className="hud-panel p-6">
+          <h3 className="text-xl font-orbitron font-bold text-green-400 mb-4 flex items-center justify-center gap-2">
+            <Telescope className="w-6 h-6" />
+            NASA EXOPLANET DISCOVERIES
+            {exoplanetsLoading && <span className="text-xs">(Loading...)</span>}
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+            <div className="space-y-2">
+              <div className="text-sm text-foreground-secondary font-orbitron">CONFIRMED PLANETS</div>
+              <div className="text-lg font-bold text-green-400">
+                {exoplanetStats.totalConfirmed?.toLocaleString() || '5,000+'}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="text-sm text-foreground-secondary font-orbitron">RECENT DISCOVERIES</div>
+              <div className="text-lg font-bold text-blue-400">
+                {exoplanetStats.recentDiscoveries?.toLocaleString() || '100+'}
+              </div>
+              <div className="text-xs text-muted-foreground">Since 2023</div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="text-sm text-foreground-secondary font-orbitron">HABITABLE ZONE</div>
+              <div className="text-lg font-bold text-yellow-400">
+                {exoplanetStats.habitableZonePlanets?.toLocaleString() || '50+'}
+              </div>
+              <div className="text-xs text-muted-foreground">Potentially habitable</div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="text-sm text-foreground-secondary font-orbitron">LIVE EXOPLANETS</div>
+              <div className="text-lg font-bold text-purple-400">{exoplanets.length}</div>
+              <div className="text-xs text-muted-foreground">In time system</div>
+            </div>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <Badge variant="secondary" className="text-xs">
+              Updated: {new Date(exoplanetStats.lastUpdated).toLocaleDateString()}
+            </Badge>
+          </div>
+        </Card>
+      )}
 
       {/* Galactic Coordinates & Stats */}
       <Card className="hud-panel p-6">
