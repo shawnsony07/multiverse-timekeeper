@@ -390,14 +390,6 @@ The Express.js server provides 30+ endpoints that aggregate external APIs:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- **NASA** for astronomical data and EONET API
-- **TimeZoneDB** for real-time timezone data
-- **Supabase** for backend services
-- **shadcn/ui** for the beautiful component library
-- **Radix UI** for accessible component primitives
-
 ---
 
 *"In the vastness of space and the immensity of time, it is my joy to share this moment with you."*
