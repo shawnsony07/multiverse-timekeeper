@@ -386,10 +386,6 @@ The Express.js server provides 30+ endpoints that aggregate external APIs:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ---
 
 *"In the vastness of space and the immensity of time, it is my joy to share this moment with you."*
